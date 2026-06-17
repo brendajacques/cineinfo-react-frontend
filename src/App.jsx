@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Layout from './components/Layout.jsx';
 import { Star, Heart, Flame, Sparkles, MessageSquare, Play, CheckCircle2 } from 'lucide-react';
 import MovieCard from './components/MovieCard.jsx';
@@ -6,6 +7,7 @@ import SearchBar from './components/SearchBar.jsx';
 import { useAuth } from './context/AuthContext.jsx';
 
 function App() {
+  const navigate = useNavigate();
   const [reviewTitle, setReviewTitle] = useState('');
   const [reviewType, setReviewType] = useState('filme');
   const [reviewContent, setReviewContent] = useState('');
@@ -109,7 +111,10 @@ function App() {
             Uma narrativa grandiosa sobre poder, destino e sobrevivência no desértico planeta Arrakis.
           </p>
           <div className="flex flex-wrap items-center gap-4 pt-2">
-            <button className="flex items-center gap-2 rounded-full bg-cinema-gold px-6 py-3 text-sm font-bold text-cinema-black hover:bg-yellow-400 hover:scale-105 transition-all duration-300 shadow-[0_4px_15px_rgba(245,197,24,0.3)]">
+            <button 
+              onClick={() => navigate('/filme/968051')}
+              className="flex items-center gap-2 rounded-full bg-cinema-gold px-6 py-3 text-sm font-bold text-cinema-black hover:bg-yellow-400 hover:scale-105 transition-all duration-300 shadow-[0_4px_15px_rgba(245,197,24,0.3)]"
+            >
               <Play className="h-4 w-4 fill-cinema-black" />
               <span>Ver Detalhes</span>
             </button>
@@ -197,7 +202,7 @@ function App() {
                   movie={movie}
                   isFavorite={isFav}
                   onFavoriteToggle={toggleFavorite}
-                  onDetailsClick={(id) => alert(`Você clicou no filme ID ${id} (TMDB API)`)}
+                  onDetailsClick={(id) => navigate(`/filme/${id}`)}
                 />
               );
             })}
