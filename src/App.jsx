@@ -1,6 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Layout from './components/Layout.jsx';
-import { Star, Heart, Flame, Sparkles, MessageSquare, Play, Plus, Film, User, CheckCircle2 } from 'lucide-react';
+import { Star, Heart, Flame, Sparkles, MessageSquare, Play, CheckCircle2 } from 'lucide-react';
+import MovieCard from './components/MovieCard.jsx';
+import { useAuth } from './context/AuthContext.jsx';
 
 function App() {
   const [reviewTitle, setReviewTitle] = useState('');
@@ -12,14 +14,48 @@ function App() {
   ]);
   const [successMsg, setSuccessMsg] = useState(false);
 
-  const [favorites, setFavorites] = useState([1, 2]); // ID of items in favorites list
+  const { favorites, toggleFavorite } = useAuth();
 
-  const featuredItems = [
-    { id: 1, title: 'Duna: Parte Dois', category: 'Filme', year: '2024', rating: '9.3', image: 'https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=600&auto=format&fit=crop', desc: 'A jornada mítica de Paul Atreides se une a Chani e aos Fremen em busca de vingança.' },
-    { id: 2, title: 'Interestelar', category: 'Filme', year: '2014', rating: '9.7', image: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=600&auto=format&fit=crop', desc: 'Uma equipe de exploradores viaja através de um buraco de minhoca no espaço para garantir a sobrevivência da humanidade.' },
-    { id: 3, title: 'Stranger Things', category: 'Série', year: '2022', rating: '8.9', image: 'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?q=80&w=600&auto=format&fit=crop', desc: 'Um grupo de amigos descobre mistérios sobrenaturais e dimensões alternativas sob sua cidade natal.' },
-    { id: 4, title: 'Paul Atreides (Duna)', category: 'Personagem', year: '-', rating: 'N/A', image: 'https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?q=80&w=600&auto=format&fit=crop', desc: 'O jovem herdeiro da Casa Atreides, profetizado como o messias dos Fremen, o Muad\'Dib.' },
-  ];
+  const [tmdbMovies, setTmdbMovies] = useState([]);
+  const [loadingTmdb, setLoadingTmdb] = useState(true);
+  const [tmdbError, setTmdbError] = useState(null);
+
+  useEffect(() => {
+    const fetchTmdbMovies = async () => {
+      try {
+        setLoadingTmdb(true);
+        const baseUrl = import.meta.env.VITE_TMDB_BASE_URL;
+        const token = import.meta.env.VITE_TMDB_ACCESS_TOKEN;
+
+        if (!baseUrl || !token) {
+          throw new Error('As variáveis de ambiente do TMDB não foram configuradas corretamente.');
+        }
+
+        const url = `${baseUrl}/trending/movie/week?language=pt-BR`;
+        const response = await fetch(url, {
+          method: 'GET',
+          headers: {
+            accept: 'application/json',
+            Authorization: `Bearer ${token}`
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error(`Erro na API TMDB: ${response.status} - ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        setTmdbMovies(data.results || []);
+      } catch (err) {
+        console.error('Erro ao buscar do TMDB:', err);
+        setTmdbError(err.message || 'Ocorreu um erro desconhecido.');
+      } finally {
+        setLoadingTmdb(false);
+      }
+    };
+
+    fetchTmdbMovies();
+  }, []);
 
   const handleAddReview = (e) => {
     e.preventDefault();
@@ -39,14 +75,6 @@ function App() {
     setReviewContent('');
     setSuccessMsg(true);
     setTimeout(() => setSuccessMsg(false), 4000);
-  };
-
-  const toggleFavorite = (id) => {
-    if (favorites.includes(id)) {
-      setFavorites(favorites.filter(favId => favId !== id));
-    } else {
-      setFavorites([...favorites, id]);
-    }
   };
 
   return (
@@ -88,81 +116,66 @@ function App() {
           </div>
         </div>
       </section>
-
-      {/* Grid: Títulos & Personagens Destaques */}
+      {/* Grid: Filmes Populares (TMDB API) */}
       <section className="mb-16">
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-3">
             <Sparkles className="h-6 w-6 text-cinema-gold animate-spin-slow" />
             <h3 className="text-2xl font-black tracking-wide text-cinema-popcorn">
-              Explorar Destaques
+              Filmes Populares (TMDB)
             </h3>
           </div>
           <span className="text-xs text-cinema-neon hover:underline cursor-pointer flex items-center gap-1 font-bold">
-            Ver Todos <Play className="h-2 w-2 fill-cinema-neon" />
+            Atualizado em Tempo Real <Play className="h-2 w-2 fill-cinema-neon" />
           </span>
         </div>
 
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {featuredItems.map((item) => {
-            const isFav = favorites.includes(item.id);
-            return (
+        {loadingTmdb ? (
+          /* Shimmer Loading Skeleton */
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {[...Array(8)].map((_, index) => (
               <div 
-                key={item.id} 
-                className="group relative flex flex-col overflow-hidden rounded-2xl border border-cinema-charcoal bg-cinema-charcoal/30 hover:bg-cinema-charcoal/50 hover:border-cinema-gray/80 transition-all duration-300 hover:shadow-[0_8px_25px_rgba(0,0,0,0.5)]"
+                key={index} 
+                className="animate-pulse flex flex-col rounded-2xl border border-cinema-charcoal bg-cinema-charcoal/20 h-[380px] overflow-hidden"
               >
-                {/* Image Wrap */}
-                <div className="relative h-48 w-full overflow-hidden bg-cinema-black">
-                  <img 
-                    src={item.image} 
-                    alt={item.title} 
-                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" 
-                  />
-                  {/* Category Tag */}
-                  <span className="absolute left-3 top-3 rounded-full bg-cinema-black/80 border border-cinema-charcoal px-2.5 py-0.5 text-xs font-bold text-cinema-neon">
-                    {item.category}
-                  </span>
-                  
-                  {/* Heart Button */}
-                  <button 
-                    onClick={() => toggleFavorite(item.id)}
-                    className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full bg-cinema-black/85 text-cinema-popcorn border border-cinema-charcoal hover:border-cinema-red hover:text-cinema-red transition-all duration-200"
-                    aria-label="Adicionar aos favoritos"
-                  >
-                    <Heart className={`h-4 w-4 ${isFav ? 'fill-cinema-red text-cinema-red' : ''}`} />
-                  </button>
-                </div>
-
-                {/* Content */}
-                <div className="flex flex-1 flex-col p-4 justify-between">
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between text-xs text-cinema-gray">
-                      <span>Lançamento: {item.year}</span>
-                      {item.rating !== 'N/A' && (
-                        <span className="flex items-center gap-1 text-cinema-gold font-bold">
-                          <Star className="h-3 w-3 fill-cinema-gold" /> {item.rating}
-                        </span>
-                      )}
+                <div className="bg-cinema-charcoal/50 aspect-2/3 w-full"></div>
+                <div className="p-4 flex-1 flex flex-col justify-between">
+                  <div className="space-y-3">
+                    <div className="h-3.5 bg-cinema-charcoal/50 rounded w-1/3"></div>
+                    <div className="h-4 bg-cinema-charcoal/50 rounded w-3/4"></div>
+                    <div className="space-y-2">
+                      <div className="h-2.5 bg-cinema-charcoal/50 rounded w-full"></div>
+                      <div className="h-2.5 bg-cinema-charcoal/50 rounded w-5/6"></div>
                     </div>
-                    <h4 className="text-lg font-bold text-cinema-popcorn group-hover:text-cinema-gold transition-colors duration-200">
-                      {item.title}
-                    </h4>
-                    <p className="text-xs text-cinema-popcorn/60 line-clamp-3">
-                      {item.desc}
-                    </p>
                   </div>
-                  <div className="mt-4 pt-3 border-t border-cinema-charcoal flex items-center justify-between">
-                    <span className="text-xs font-medium text-cinema-popcorn/40">CineInfo Curadoria</span>
-                    <button className="text-xs font-bold text-cinema-gold group-hover:underline flex items-center gap-0.5">
-                      Ver Ficha
-                    </button>
-                  </div>
+                  <div className="h-8 bg-cinema-charcoal/50 rounded w-full mt-4"></div>
                 </div>
               </div>
-            );
-          })}
-        </div>
+            ))}
+          </div>
+        ) : tmdbError ? (
+          <div className="rounded-xl border border-cinema-red/25 bg-cinema-red/10 p-6 text-center">
+            <p className="text-cinema-red font-bold">Falha ao obter filmes da API</p>
+            <p className="text-xs text-cinema-popcorn/60 mt-2">{tmdbError}</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {tmdbMovies.slice(0, 8).map((movie) => {
+              const isFav = favorites.includes(movie.id);
+              return (
+                <MovieCard 
+                  key={movie.id}
+                  movie={movie}
+                  isFavorite={isFav}
+                  onFavoriteToggle={toggleFavorite}
+                  onDetailsClick={(id) => alert(`Você clicou no filme ID ${id} (TMDB API)`)}
+                />
+              );
+            })}
+          </div>
+        )}
       </section>
+
 
       {/* Grid: Review Panel & Interactive Suggestions */}
       <section className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mb-8">

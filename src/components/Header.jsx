@@ -1,13 +1,14 @@
 import { useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
-import { Search, Film, Heart, MessageSquare, Menu, X, User } from 'lucide-react';
+import { Search, Film, Heart, MessageSquare, Menu, X, User, LogOut } from 'lucide-react';
+import { useAuth } from '../context/AuthContext.jsx';
 
 function Header() {
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const { user, logout, favorites } = useAuth();
   
-  // Mock favorites count for visual feedback
-  const favoritesCount = 3;
+  const favoritesCount = favorites.length;
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
@@ -84,6 +85,38 @@ function Header() {
                 </NavLink>
               );
             })}
+            {/* User Account - Desktop */}
+            {user ? (
+              <div className="flex items-center gap-3 border-l border-cinema-charcoal pl-4 ml-2 animate-fadeIn">
+                <div className="flex items-center gap-2">
+                  <div className="h-9 w-9 overflow-hidden rounded-full border border-cinema-gold bg-cinema-charcoal shadow-[0_0_8px_rgba(245,197,24,0.35)]">
+                    <img src={user.avatar} alt={user.name} className="h-full w-full object-cover" />
+                  </div>
+                  <div className="hidden xl:flex flex-col">
+                    <span className="text-xs font-bold text-cinema-popcorn">{user.name}</span>
+                    <span className="text-[9px] text-cinema-gray">Membro</span>
+                  </div>
+                </div>
+                <button 
+                  onClick={logout}
+                  className="flex items-center gap-1 rounded-lg border border-cinema-charcoal bg-cinema-charcoal/20 px-3 py-1.5 text-xs font-bold text-cinema-popcorn hover:border-cinema-red hover:text-cinema-red hover:bg-cinema-red/10 transition-all duration-300"
+                  title="Sair da conta"
+                >
+                  <LogOut className="h-3.5 w-3.5" />
+                  <span className="hidden sm:inline">Sair</span>
+                </button>
+              </div>
+            ) : (
+              <div className="flex items-center border-l border-cinema-charcoal pl-4 ml-2">
+                <Link 
+                  to="/login"
+                  className="flex items-center gap-1.5 rounded-full bg-cinema-red hover:bg-red-700 text-cinema-popcorn px-5 py-2 text-xs font-bold transition-all duration-300 shadow-[0_4px_12px_rgba(229,9,20,0.35)] hover:scale-105"
+                >
+                  <User className="h-3.5 w-3.5" />
+                  <span>Entrar</span>
+                </Link>
+              </div>
+            )}
           </nav>
 
           {/* Mobile Menu & Search Actions */}
@@ -125,6 +158,42 @@ function Header() {
               Buscar
             </button>
           </form>
+
+          {/* Mobile User Profile Section */}
+          <div className="pt-2">
+            {user ? (
+              <div className="flex items-center justify-between rounded-xl border border-cinema-charcoal bg-cinema-charcoal/30 p-3.5">
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 overflow-hidden rounded-full border border-cinema-gold bg-cinema-charcoal">
+                    <img src={user.avatar} alt={user.name} className="h-full w-full" />
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-bold text-cinema-popcorn">{user.name}</h4>
+                    <p className="text-[10px] text-cinema-gray">{user.email}</p>
+                  </div>
+                </div>
+                <button 
+                  onClick={() => {
+                    logout();
+                    setIsOpen(false);
+                  }}
+                  className="flex items-center gap-1.5 rounded-lg border border-cinema-red/30 bg-cinema-red/10 px-3 py-1.5 text-xs font-bold text-cinema-red hover:bg-cinema-red hover:text-cinema-popcorn transition-all duration-200"
+                >
+                  <LogOut className="h-3.5 w-3.5" />
+                  <span>Sair</span>
+                </button>
+              </div>
+            ) : (
+              <Link 
+                to="/login"
+                onClick={() => setIsOpen(false)}
+                className="flex w-full items-center justify-center gap-2 rounded-xl bg-cinema-red py-3 text-sm font-bold text-cinema-popcorn shadow-[0_4px_12px_rgba(229,9,20,0.3)] hover:bg-red-700 transition-colors"
+              >
+                <User className="h-4 w-4" />
+                <span>Entrar na Conta</span>
+              </Link>
+            )}
+          </div>
 
           {/* Mobile Navigation Links */}
           <nav className="flex flex-col gap-1">
