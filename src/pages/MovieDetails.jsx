@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 import Layout from '../components/Layout.jsx';
-import { Star, Heart, ArrowLeft, Clock, Calendar, Film, Sparkles } from 'lucide-react';
+import { Star, Heart, ArrowLeft, Clock, Calendar, Film, Sparkles, DollarSign, Globe, Clapperboard } from 'lucide-react';
 
 /**
  * Página de Detalhes do Filme.
@@ -56,7 +56,7 @@ function MovieDetails() {
   if (loading) {
     return (
       <Layout>
-        <div className="flex flex-col items-center justify-center min-h-[50vh] space-y-4">
+        <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4">
           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-cinema-gold"></div>
           <p className="text-cinema-popcorn/60 text-sm animate-pulse">Carregando detalhes do filme...</p>
         </div>
@@ -67,7 +67,7 @@ function MovieDetails() {
   if (error || !movie) {
     return (
       <Layout>
-        <div className="max-w-md mx-auto text-center py-12 space-y-6">
+        <div className="max-w-md mx-auto text-center py-16 space-y-6">
           <div className="inline-flex h-16 w-16 items-center justify-center rounded-full bg-cinema-red/10 border border-cinema-red/30 text-cinema-red">
             <Film className="h-8 w-8" />
           </div>
@@ -103,39 +103,45 @@ function MovieDetails() {
 
   return (
     <Layout>
-      <div className="space-y-8 pb-12">
-        {/* Back Button */}
-        <div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8">
+        
+        {/* Botão Voltar */}
+        <div className="flex justify-start">
           <button
             onClick={() => navigate(-1)}
-            className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-cinema-popcorn/60 hover:text-cinema-gold transition-colors duration-200"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-cinema-charcoal/40 hover:bg-cinema-charcoal border border-cinema-charcoal/60 hover:border-cinema-gold/50 text-cinema-popcorn/80 hover:text-cinema-gold transition-all duration-300 text-xs font-bold uppercase tracking-wider cursor-pointer"
           >
             <ArrowLeft className="h-4 w-4" />
             <span>Voltar</span>
           </button>
         </div>
 
-        {/* Movie Main Banner */}
-        <div className="relative overflow-hidden rounded-3xl border border-cinema-charcoal bg-cinema-charcoal/10 shadow-[0_15px_30px_rgba(0,0,0,0.6)]">
+        {/* Hero Section */}
+        <div className="relative overflow-hidden rounded-3xl border border-cinema-charcoal/80 bg-cinema-charcoal/20 shadow-2xl">
           {backdropUrl && (
             <div className="absolute inset-0 -z-10">
               <img 
                 src={backdropUrl} 
                 alt="" 
-                className="h-full w-full object-cover opacity-20 blur-[2px]"
+                className="h-full w-full object-cover opacity-25 blur-[1px] scale-105"
               />
-              <div className="absolute inset-0 bg-linear-to-t from-cinema-black via-cinema-black/80 to-transparent"></div>
+              <div className="absolute inset-0 bg-gradient-to-t from-cinema-black via-cinema-black/85 to-transparent"></div>
+              <div className="absolute inset-0 bg-gradient-to-r from-cinema-black/90 via-transparent to-transparent"></div>
             </div>
           )}
 
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-8 p-6 md:p-10 items-start">
-            {/* Poster Column */}
-            <div className="md:col-span-4 lg:col-span-3 mx-auto md:mx-0 w-full max-w-[280px] md:max-w-none">
-              <div className="overflow-hidden rounded-2xl border border-cinema-charcoal bg-cinema-black shadow-[0_10px_25px_rgba(0,0,0,0.5)]">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-8 p-6 md:p-10 items-center">
+            {/* Pôster do Filme */}
+            <div className="md:col-span-4 lg:col-span-3 mx-auto md:mx-0 w-full max-w-[260px] md:max-w-none">
+              <div className="group relative overflow-hidden rounded-2xl border-2 border-cinema-charcoal/80 bg-cinema-black shadow-[0_15px_30px_rgba(0,0,0,0.7)] transition-all duration-500 hover:border-cinema-gold/50 hover:shadow-[0_20px_40px_rgba(245,197,24,0.15)]">
                 {posterUrl ? (
-                  <img src={posterUrl} alt={movie.title} className="w-full h-auto object-cover" />
+                  <img 
+                    src={posterUrl} 
+                    alt={movie.title} 
+                    className="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-105" 
+                  />
                 ) : (
-                  <div className="flex aspect-2/3 w-full flex-col items-center justify-center bg-cinema-charcoal p-4 text-center">
+                  <div className="flex aspect-[2/3] w-full flex-col items-center justify-center bg-cinema-charcoal p-4 text-center">
                     <Film className="h-12 w-12 text-cinema-gray mb-3" />
                     <span className="text-sm font-bold text-cinema-popcorn">{movie.title}</span>
                   </div>
@@ -143,85 +149,82 @@ function MovieDetails() {
               </div>
             </div>
 
-            {/* Info Column */}
-            <div className="md:col-span-8 lg:col-span-9 space-y-6">
-              <div className="space-y-3 text-left">
-                <div className="flex flex-wrap items-center gap-2">
+            {/* Informações Principais */}
+            <div className="md:col-span-8 lg:col-span-9 space-y-6 text-left">
+              <div className="space-y-3">
+                {/* Gêneros Badges */}
+                <div className="flex flex-wrap gap-2">
                   {movie.genres?.map(genre => (
-                    <span key={genre.id} className="rounded-full bg-cinema-charcoal/80 border border-cinema-charcoal px-3 py-1 text-[11px] font-semibold text-cinema-neon">
+                    <span 
+                      key={genre.id} 
+                      className="rounded-full bg-cinema-neon/10 border border-cinema-neon/30 px-3.5 py-1 text-[10px] sm:text-xs font-bold uppercase tracking-wider text-cinema-neon hover:bg-cinema-neon/20 transition-colors duration-300"
+                    >
                       {genre.name}
                     </span>
                   ))}
                 </div>
 
-                <h1 className="text-3xl md:text-4xl lg:text-5xl font-black tracking-tight text-cinema-popcorn">
+                <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-cinema-popcorn drop-shadow-md">
                   {movie.title}
                 </h1>
+                
                 {movie.tagline && (
-                  <p className="text-sm md:text-base italic text-cinema-gold/85 font-medium">
+                  <p className="text-sm sm:text-base md:text-lg italic text-cinema-gold/90 font-medium tracking-wide">
                     "{movie.tagline}"
                   </p>
                 )}
               </div>
 
-              {/* Stats Grid */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 p-4 rounded-xl border border-cinema-charcoal/60 bg-cinema-black/40 text-left">
+              {/* Grid de Stats Rápidas */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 p-4 rounded-2xl border border-cinema-charcoal/60 bg-cinema-black/60 backdrop-blur-sm">
                 <div className="space-y-1">
-                  <span className="text-[10px] uppercase font-bold tracking-wider text-cinema-popcorn/40 flex items-center gap-1">
-                    <Star className="h-3 w-3 text-cinema-gold fill-cinema-gold" /> Avaliação
+                  <span className="text-[10px] uppercase font-bold tracking-wider text-cinema-popcorn/50 flex items-center gap-1.5">
+                    <Star className="h-3.5 w-3.5 text-cinema-gold fill-cinema-gold" /> Avaliação
                   </span>
-                  <p className="text-base font-extrabold text-cinema-gold">
+                  <p className="text-base sm:text-lg font-extrabold text-cinema-gold">
                     {rating} <span className="text-xs text-cinema-popcorn/50 font-normal">/ 10</span>
                   </p>
                 </div>
+                
                 <div className="space-y-1">
-                  <span className="text-[10px] uppercase font-bold tracking-wider text-cinema-popcorn/40 flex items-center gap-1">
-                    <Clock className="h-3 w-3 text-cinema-neon" /> Duração
+                  <span className="text-[10px] uppercase font-bold tracking-wider text-cinema-popcorn/50 flex items-center gap-1.5">
+                    <Clock className="h-3.5 w-3.5 text-cinema-neon" /> Duração
                   </span>
-                  <p className="text-base font-extrabold text-cinema-popcorn">
+                  <p className="text-base sm:text-lg font-extrabold text-cinema-popcorn">
                     {movie.runtime ? `${movie.runtime} min` : 'N/A'}
                   </p>
                 </div>
+
                 <div className="space-y-1">
-                  <span className="text-[10px] uppercase font-bold tracking-wider text-cinema-popcorn/40 flex items-center gap-1">
-                    <Calendar className="h-3 w-3 text-cinema-gray" /> Lançamento
+                  <span className="text-[10px] uppercase font-bold tracking-wider text-cinema-popcorn/50 flex items-center gap-1.5">
+                    <Calendar className="h-3.5 w-3.5 text-cinema-popcorn/60" /> Lançamento
                   </span>
-                  <p className="text-base font-extrabold text-cinema-popcorn">
+                  <p className="text-base sm:text-lg font-extrabold text-cinema-popcorn">
                     {releaseYear}
                   </p>
                 </div>
+
                 <div className="space-y-1">
-                  <span className="text-[10px] uppercase font-bold tracking-wider text-cinema-popcorn/40">
+                  <span className="text-[10px] uppercase font-bold tracking-wider text-cinema-popcorn/50">
                     Origem
                   </span>
-                  <p className="text-base font-extrabold text-cinema-popcorn uppercase">
+                  <p className="text-base sm:text-lg font-extrabold text-cinema-popcorn uppercase">
                     {movie.original_language || 'N/A'}
                   </p>
                 </div>
               </div>
 
-              {/* Synopsis */}
-              <div className="space-y-2.5 text-left">
-                <h3 className="text-lg font-bold text-cinema-popcorn flex items-center gap-2">
-                  <Sparkles className="h-4.5 w-4.5 text-cinema-gold" />
-                  Sinopse
-                </h3>
-                <p className="text-sm leading-relaxed text-cinema-popcorn/80">
-                  {movie.overview || 'Nenhuma sinopse disponível em português para este filme.'}
-                </p>
-              </div>
-
-              {/* Actions */}
-              <div className="flex flex-wrap items-center gap-4 pt-4 border-t border-cinema-charcoal/40">
+              {/* Ações (Favoritar) */}
+              <div className="flex flex-wrap items-center gap-4 pt-2">
                 <button 
                   onClick={() => toggleFavorite(movie.id)}
-                  className={`flex items-center gap-2 rounded-full border px-6 py-3 text-sm font-bold transition-all duration-300 ${
+                  className={`flex items-center gap-2 rounded-full border px-6 py-3 text-sm font-bold cursor-pointer transition-all duration-300 transform active:scale-95 ${
                     isFav 
-                      ? 'border-cinema-red bg-cinema-red/15 text-cinema-red shadow-[0_0_12px_rgba(229,9,20,0.3)]' 
-                      : 'border-cinema-gray bg-cinema-charcoal/40 text-cinema-popcorn hover:border-cinema-gold hover:text-cinema-gold'
+                      ? 'border-cinema-red bg-cinema-red/15 text-cinema-red shadow-[0_0_15px_rgba(229,9,20,0.35)] hover:bg-cinema-red/25' 
+                      : 'border-cinema-gray bg-cinema-charcoal/40 text-cinema-popcorn hover:border-cinema-gold hover:text-cinema-gold hover:bg-cinema-charcoal/70'
                   }`}
                 >
-                  <Heart className={`h-4 w-4 ${isFav ? 'fill-cinema-red' : ''}`} />
+                  <Heart className={`h-4.5 w-4.5 transition-colors duration-300 ${isFav ? 'fill-cinema-red text-cinema-red' : ''}`} />
                   <span>{isFav ? 'Favoritado' : 'Adicionar aos Favoritos'}</span>
                 </button>
               </div>
@@ -229,62 +232,104 @@ function MovieDetails() {
           </div>
         </div>
 
-        {/* Technical Info & Cast Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Box office and details */}
-          <div className="lg:col-span-1 rounded-2xl border border-cinema-charcoal bg-cinema-charcoal/20 p-6 space-y-6 text-left">
-            <h4 className="text-lg font-bold text-cinema-popcorn pb-3 border-b border-cinema-charcoal/60">Informações Técnicas</h4>
-            <div className="space-y-4 text-xs">
-              <div>
-                <span className="text-cinema-popcorn/40 uppercase font-bold tracking-wider block mb-1">Título Original</span>
-                <span className="text-cinema-popcorn font-medium">{movie.original_title || movie.title}</span>
+        {/* Informações Secundárias: Sinopse, Elenco, Info Técnica */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 text-left">
+          
+          {/* Coluna da Esquerda (Sinopse e Elenco) */}
+          <div className="lg:col-span-8 space-y-8">
+            
+            {/* Seção da Sinopse */}
+            <section className="rounded-2xl border border-cinema-charcoal/60 bg-cinema-charcoal/15 backdrop-blur-xs p-6 sm:p-8 space-y-4">
+              <div className="flex items-center gap-2.5 pb-3 border-b border-cinema-charcoal/60">
+                <Sparkles className="h-5 w-5 text-cinema-gold" />
+                <h2 className="text-xl font-bold text-cinema-popcorn">Sinopse</h2>
               </div>
-              <div>
-                <span className="text-cinema-popcorn/40 uppercase font-bold tracking-wider block mb-1">Orçamento</span>
-                <span className="text-cinema-popcorn font-medium">{formatCurrency(movie.budget)}</span>
+              <p className="text-sm sm:text-base leading-relaxed text-cinema-popcorn/85 tracking-wide">
+                {movie.overview || 'Nenhuma sinopse disponível em português para este filme.'}
+              </p>
+            </section>
+
+            {/* Seção do Elenco */}
+            <section className="rounded-2xl border border-cinema-charcoal/60 bg-cinema-charcoal/15 backdrop-blur-xs p-6 sm:p-8 space-y-6">
+              <div className="flex items-center gap-2.5 pb-3 border-b border-cinema-charcoal/60">
+                <Clapperboard className="h-5 w-5 text-cinema-neon" />
+                <h2 className="text-xl font-bold text-cinema-popcorn">Elenco Principal</h2>
               </div>
-              <div>
-                <span className="text-cinema-popcorn/40 uppercase font-bold tracking-wider block mb-1">Receita</span>
-                <span className="text-cinema-popcorn font-medium">{formatCurrency(movie.revenue)}</span>
-              </div>
-              {movie.production_countries && movie.production_countries.length > 0 && (
-                <div>
-                  <span className="text-cinema-popcorn/40 uppercase font-bold tracking-wider block mb-1">País de Produção</span>
-                  <span className="text-cinema-popcorn font-medium">
-                    {movie.production_countries.map(c => c.name).join(', ')}
-                  </span>
+              
+              {movie.credits?.cast && movie.credits.cast.length > 0 ? (
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                  {movie.credits.cast.slice(0, 8).map((actor) => (
+                    <div 
+                      key={actor.id} 
+                      className="group flex flex-col items-center text-center p-3 rounded-xl bg-cinema-charcoal/30 border border-cinema-charcoal/50 hover:border-cinema-gold/30 hover:bg-cinema-charcoal/60 transition-all duration-300"
+                    >
+                      <div className="h-20 w-20 rounded-full overflow-hidden mb-3 border border-cinema-charcoal/80 shadow-md group-hover:border-cinema-gold/50 transition-colors duration-300">
+                        {actor.profile_path ? (
+                          <img 
+                            src={`https://image.tmdb.org/t/p/w185${actor.profile_path}`} 
+                            alt={actor.name} 
+                            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                          />
+                        ) : (
+                          <div className="h-full w-full bg-cinema-charcoal flex items-center justify-center text-cinema-gold text-lg font-bold">
+                            {actor.name.charAt(0)}
+                          </div>
+                        )}
+                      </div>
+                      <span className="text-xs font-bold text-cinema-popcorn line-clamp-1 group-hover:text-cinema-gold transition-colors duration-200">{actor.name}</span>
+                      <span className="text-[10px] text-cinema-popcorn/50 line-clamp-1 mt-0.5">{actor.character}</span>
+                    </div>
+                  ))}
                 </div>
+              ) : (
+                <p className="text-sm text-cinema-popcorn/50 italic">Nenhuma informação de elenco disponível.</p>
               )}
-            </div>
+            </section>
+
           </div>
 
-          {/* Cast Members */}
-          <div className="lg:col-span-2 rounded-2xl border border-cinema-charcoal bg-cinema-charcoal/10 p-6 space-y-6 text-left">
-            <h4 className="text-lg font-bold text-cinema-popcorn pb-3 border-b border-cinema-charcoal/60">Elenco Principal</h4>
-            {movie.credits?.cast && movie.credits.cast.length > 0 ? (
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                {movie.credits.cast.slice(0, 8).map((actor) => (
-                  <div key={actor.id} className="flex flex-col items-center text-center p-2 rounded-xl bg-cinema-charcoal/10 border border-cinema-charcoal/30">
-                    {actor.profile_path ? (
-                      <img 
-                        src={`https://image.tmdb.org/t/p/w185${actor.profile_path}`} 
-                        alt={actor.name} 
-                        className="h-20 w-20 rounded-full object-cover mb-2 border border-cinema-charcoal"
-                      />
-                    ) : (
-                      <div className="h-20 w-20 rounded-full bg-cinema-charcoal flex items-center justify-center mb-2 text-cinema-gray text-xs">
-                        {actor.name.charAt(0)}
-                      </div>
-                    )}
-                    <span className="text-xs font-bold text-cinema-popcorn line-clamp-1">{actor.name}</span>
-                    <span className="text-[10px] text-cinema-popcorn/50 line-clamp-1 mt-0.5">{actor.character}</span>
-                  </div>
-                ))}
+          {/* Coluna da Direita (Informações Técnicas) */}
+          <div className="lg:col-span-4 space-y-8">
+            <section className="rounded-2xl border border-cinema-charcoal/60 bg-cinema-charcoal/15 backdrop-blur-xs p-6 sm:p-8 space-y-6">
+              <div className="flex items-center gap-2.5 pb-3 border-b border-cinema-charcoal/60">
+                <Film className="h-5 w-5 text-cinema-gold" />
+                <h2 className="text-xl font-bold text-cinema-popcorn">Ficha Técnica</h2>
               </div>
-            ) : (
-              <p className="text-xs text-cinema-popcorn/40">Nenhuma informação de elenco disponível.</p>
-            )}
+              
+              <div className="space-y-4 divide-y divide-cinema-charcoal/40">
+                <div className="pt-0 pb-3">
+                  <span className="text-[10px] uppercase font-bold tracking-wider text-cinema-popcorn/40 block mb-1">Título Original</span>
+                  <span className="text-sm font-semibold text-cinema-popcorn">{movie.original_title || movie.title}</span>
+                </div>
+                
+                <div className="pt-3 pb-3">
+                  <span className="text-[10px] uppercase font-bold tracking-wider text-cinema-popcorn/40 block mb-1 flex items-center gap-1">
+                    <DollarSign className="h-3 w-3 text-cinema-gold" /> Orçamento
+                  </span>
+                  <span className="text-sm font-semibold text-cinema-popcorn">{formatCurrency(movie.budget)}</span>
+                </div>
+
+                <div className="pt-3 pb-3">
+                  <span className="text-[10px] uppercase font-bold tracking-wider text-cinema-popcorn/40 block mb-1 flex items-center gap-1">
+                    <DollarSign className="h-3 w-3 text-cinema-neon" /> Receita
+                  </span>
+                  <span className="text-sm font-semibold text-cinema-popcorn">{formatCurrency(movie.revenue)}</span>
+                </div>
+
+                {movie.production_countries && movie.production_countries.length > 0 && (
+                  <div className="pt-3">
+                    <span className="text-[10px] uppercase font-bold tracking-wider text-cinema-popcorn/40 block mb-1 flex items-center gap-1">
+                      <Globe className="h-3 w-3 text-cinema-popcorn/60" /> País de Produção
+                    </span>
+                    <span className="text-sm font-semibold text-cinema-popcorn leading-relaxed block">
+                      {movie.production_countries.map(c => c.name).join(', ')}
+                    </span>
+                  </div>
+                )}
+              </div>
+            </section>
           </div>
+
         </div>
       </div>
     </Layout>

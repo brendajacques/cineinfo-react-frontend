@@ -20,6 +20,7 @@ function App() {
   const { favorites, toggleFavorite } = useAuth();
 
   const [tmdbMovies, setTmdbMovies] = useState([]);
+  const [featuredMovie, setFeaturedMovie] = useState(null);
   const [loadingTmdb, setLoadingTmdb] = useState(true);
   const [tmdbError, setTmdbError] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
@@ -42,6 +43,24 @@ function App() {
 
         if (!baseUrl || !token) {
           throw new Error('As variáveis de ambiente do TMDB não foram configuradas corretamente.');
+        }
+
+        // Busca o filme em destaque (A Freira)
+        try {
+          const featuredUrl = `${baseUrl}/movie/439079?language=pt-BR`;
+          const featuredResponse = await fetch(featuredUrl, {
+            method: 'GET',
+            headers: {
+              accept: 'application/json',
+              Authorization: `Bearer ${token}`
+            }
+          });
+          if (featuredResponse.ok) {
+            const featuredData = await featuredResponse.json();
+            setFeaturedMovie(featuredData);
+          }
+        } catch (err) {
+          console.error('Erro ao buscar filme em destaque:', err);
         }
 
         const url = `${baseUrl}/trending/movie/week?language=pt-BR`;
@@ -93,41 +112,53 @@ function App() {
   return (
     <Layout>
       {/* Hero Banner Section */}
-      <section className="relative overflow-hidden rounded-3xl border border-cinema-charcoal bg-linear-to-r from-cinema-black via-cinema-charcoal/90 to-transparent p-8 md:p-12 mb-12 shadow-[0_15px_30px_rgba(0,0,0,0.6)]">
-        {/* Background Decorative Neon Glow */}
-        <div className="absolute right-0 top-0 -z-10 h-72 w-72 rounded-full bg-cinema-red/10 blur-[80px]"></div>
-        <div className="absolute -left-10 -bottom-10 -z-10 h-60 w-60 rounded-full bg-cinema-neon/5 blur-[80px]"></div>
+      <section className="relative overflow-hidden rounded-3xl border border-cinema-charcoal bg-cinema-black p-8 md:p-12 mb-12 shadow-[0_15px_30px_rgba(0,0,0,0.6)]">
+        {/* Background Movie Backdrop */}
+        <div className="absolute inset-0">
+          <img 
+            src={featuredMovie?.backdrop_path 
+              ? `https://image.tmdb.org/t/p/original${featuredMovie.backdrop_path}` 
+              : "https://image.tmdb.org/t/p/original/fgsHxz21B27hOOqQBiw9L6yWcM7.jpg"
+            } 
+            alt={featuredMovie?.title || "A Freira"} 
+            className="h-full w-full object-cover opacity-65 object-right-top animate-fade-in"
+          />
+          <div className="absolute inset-0 bg-linear-to-r from-cinema-black via-cinema-black/50 to-transparent"></div>
+        </div>
 
-        <div className="max-w-2xl space-y-6">
-          <div className="inline-flex items-center gap-2 rounded-full border border-cinema-gold/30 bg-cinema-gold/10 px-3 py-1 text-xs font-bold text-cinema-gold">
+        {/* Background Decorative Neon Glow */}
+        <div className="absolute right-0 top-0 h-72 w-72 rounded-full bg-cinema-red/10 blur-[80px] pointer-events-none"></div>
+        <div className="absolute -left-10 -bottom-10 h-60 w-60 rounded-full bg-cinema-neon/5 blur-[80px] pointer-events-none"></div>
+
+        <div className="relative z-10 max-w-2xl space-y-6">
+          <div className="inline-flex items-center gap-2 rounded-full border border-cinema-red/30 bg-cinema-red/10 px-3 py-1 text-xs font-bold text-cinema-red">
             <Flame className="h-3 w-3 animate-bounce" />
-            <span>Destaque da Semana</span>
+            <span>Destaque de Terror</span>
           </div>
           <h2 className="text-4xl font-extrabold md:text-5xl lg:text-6xl tracking-tight text-cinema-popcorn">
-            Duna: <span className="text-cinema-red">Parte Dois</span>
+            {featuredMovie?.title || "A Freira"}
           </h2>
           <p className="text-sm md:text-base leading-relaxed text-cinema-popcorn/70">
-            A aclamada sequência de Denis Villeneuve que conquistou críticos e bilheterias ao redor do mundo. 
-            Uma narrativa grandiosa sobre poder, destino e sobrevivência no desértico planeta Arrakis.
+            {featuredMovie?.overview || "Presa em um convento na Romênia, uma freira comete suicídio. Para investigar o caso, o Vaticano envia um padre assombrado e uma noviça prestes a se tornar freira. Juntos, eles descobrem o segredo profano da ordem."}
           </p>
           <div className="flex flex-wrap items-center gap-4 pt-2">
             <button 
-              onClick={() => navigate('/filme/968051')}
+              onClick={() => navigate('/filme/439079')}
               className="flex items-center gap-2 rounded-full bg-cinema-gold px-6 py-3 text-sm font-bold text-cinema-black hover:bg-yellow-400 hover:scale-105 transition-all duration-300 shadow-[0_4px_15px_rgba(245,197,24,0.3)]"
             >
               <Play className="h-4 w-4 fill-cinema-black" />
               <span>Ver Detalhes</span>
             </button>
             <button 
-              onClick={() => toggleFavorite(99)}
+              onClick={() => toggleFavorite(439079)}
               className={`flex items-center gap-2 rounded-full border px-6 py-3 text-sm font-bold transition-all duration-300 ${
-                favorites.includes(99) 
+                favorites.includes(439079) 
                   ? 'border-cinema-red bg-cinema-red/15 text-cinema-red shadow-[0_0_12px_rgba(229,9,20,0.3)]' 
                   : 'border-cinema-gray bg-cinema-charcoal/40 text-cinema-popcorn hover:border-cinema-gold hover:text-cinema-gold'
               }`}
             >
-              <Heart className={`h-4 w-4 ${favorites.includes(99) ? 'fill-cinema-red' : ''}`} />
-              <span>{favorites.includes(99) ? 'Favoritado' : 'Adicionar aos Favoritos'}</span>
+              <Heart className={`h-4 w-4 ${favorites.includes(439079) ? 'fill-cinema-red' : ''}`} />
+              <span>{favorites.includes(439079) ? 'Favoritado' : 'Adicionar aos Favoritos'}</span>
             </button>
           </div>
         </div>
