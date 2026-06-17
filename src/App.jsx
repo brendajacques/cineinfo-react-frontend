@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import Layout from './components/Layout.jsx';
 import { Star, Heart, Flame, Sparkles, MessageSquare, Play, CheckCircle2 } from 'lucide-react';
 import MovieCard from './components/MovieCard.jsx';
+import SearchBar from './components/SearchBar.jsx';
 import { useAuth } from './context/AuthContext.jsx';
 
 function App() {
@@ -19,6 +20,16 @@ function App() {
   const [tmdbMovies, setTmdbMovies] = useState([]);
   const [loadingTmdb, setLoadingTmdb] = useState(true);
   const [tmdbError, setTmdbError] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const filteredMovies = tmdbMovies.filter((movie) => {
+    const searchLower = searchTerm.toLowerCase();
+    const titleMatch = movie.title?.toLowerCase().includes(searchLower);
+    const originalTitleMatch = movie.original_title?.toLowerCase().includes(searchLower);
+    const overviewMatch = movie.overview?.toLowerCase().includes(searchLower);
+    return titleMatch || originalTitleMatch || overviewMatch;
+  });
+
 
   useEffect(() => {
     const fetchTmdbMovies = async () => {
@@ -118,7 +129,7 @@ function App() {
       </section>
       {/* Grid: Filmes Populares (TMDB API) */}
       <section className="mb-16">
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
           <div className="flex items-center gap-3">
             <Sparkles className="h-6 w-6 text-cinema-gold animate-spin-slow" />
             <h3 className="text-2xl font-black tracking-wide text-cinema-popcorn">
@@ -129,6 +140,9 @@ function App() {
             Atualizado em Tempo Real <Play className="h-2 w-2 fill-cinema-neon" />
           </span>
         </div>
+
+        {/* Componente de Busca */}
+        <SearchBar value={searchTerm} onChange={setSearchTerm} />
 
         {loadingTmdb ? (
           /* Shimmer Loading Skeleton */
@@ -158,9 +172,24 @@ function App() {
             <p className="text-cinema-red font-bold">Falha ao obter filmes da API</p>
             <p className="text-xs text-cinema-popcorn/60 mt-2">{tmdbError}</p>
           </div>
+        ) : filteredMovies.length === 0 ? (
+          <div className="rounded-2xl border border-cinema-charcoal bg-cinema-charcoal/10 p-12 text-center max-w-lg mx-auto shadow-lg">
+            <Search className="h-12 w-12 text-cinema-gray mx-auto mb-4 animate-pulse" />
+            <h4 className="text-xl font-bold text-cinema-popcorn">Nenhum filme encontrado</h4>
+            <p className="text-sm text-cinema-popcorn/60 mt-2">
+              Não encontramos resultados para "<span className="text-cinema-gold font-semibold">{searchTerm}</span>". 
+              Tente digitar um nome diferente.
+            </p>
+            <button 
+              onClick={() => setSearchTerm('')}
+              className="mt-6 inline-flex items-center gap-2 rounded-full bg-cinema-charcoal/50 hover:bg-cinema-charcoal px-5 py-2 text-xs font-bold text-cinema-gold border border-cinema-gold/30 hover:border-cinema-gold transition-all duration-300"
+            >
+              Limpar Busca
+            </button>
+          </div>
         ) : (
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {tmdbMovies.slice(0, 8).map((movie) => {
+            {filteredMovies.slice(0, 8).map((movie) => {
               const isFav = favorites.includes(movie.id);
               return (
                 <MovieCard 
