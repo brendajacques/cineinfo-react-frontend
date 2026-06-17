@@ -1,4 +1,5 @@
 import { Star, Heart, Film, Play } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 /**
  * Componente MovieCard - Exibe as informações de um filme do TMDB em formato de card premium.
@@ -45,11 +46,9 @@ function MovieCard({ movie, isFavorite, onFavoriteToggle, onDetailsClick }) {
   };
 
   return (
-    <div 
-      onClick={() => onDetailsClick && onDetailsClick(id)}
-      className={`group relative flex flex-col overflow-hidden rounded-2xl border border-cinema-charcoal bg-cinema-charcoal/30 hover:bg-cinema-charcoal/50 hover:border-cinema-gray/80 transition-all duration-300 hover:shadow-[0_8px_30px_rgba(0,0,0,0.7)] hover:-translate-y-1 ${
-        onDetailsClick ? 'cursor-pointer' : ''
-      }`}
+    <Link 
+      to={`/filme/${id}`}
+      className="group relative flex flex-col overflow-hidden rounded-2xl border border-cinema-charcoal bg-cinema-charcoal/30 hover:bg-cinema-charcoal/50 hover:border-cinema-gray/80 transition-all duration-300 hover:shadow-[0_8px_30px_rgba(0,0,0,0.7)] hover:-translate-y-1 cursor-pointer"
     >
       {/* Imagem do Pôster e Overlays */}
       <div className="relative aspect-2/3 w-full overflow-hidden bg-cinema-black">
@@ -139,7 +138,7 @@ function MovieCard({ movie, isFavorite, onFavoriteToggle, onDetailsClick }) {
           </button>
         </div>
       </div>
-    </div>
+    </Link>
   );
 }
 

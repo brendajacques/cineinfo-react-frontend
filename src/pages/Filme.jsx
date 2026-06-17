@@ -124,7 +124,7 @@ function Filme() {
                 alt="" 
                 className="h-full w-full object-cover opacity-20 blur-[2px]"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-cinema-black via-cinema-black/80 to-transparent"></div>
+              <div className="absolute inset-0 bg-linear-to-t from-cinema-black via-cinema-black/80 to-transparent"></div>
             </div>
           )}
 
@@ -135,7 +135,7 @@ function Filme() {
                 {posterUrl ? (
                   <img src={posterUrl} alt={movie.title} className="w-full h-auto object-cover" />
                 ) : (
-                  <div className="flex aspect-[2/3] w-full flex-col items-center justify-center bg-cinema-charcoal p-4 text-center">
+                  <div className="flex aspect-2/3 w-full flex-col items-center justify-center bg-cinema-charcoal p-4 text-center">
                     <Film className="h-12 w-12 text-cinema-gray mb-3" />
                     <span className="text-sm font-bold text-cinema-popcorn">{movie.title}</span>
                   </div>
