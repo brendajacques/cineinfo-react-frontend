@@ -1,1 +1,14 @@
 @import "tailwindcss";
+
+@theme {
+  /* Cinema themed color palette */
+  --color-cinema-red: #e50914;      /* Classic theater curtain / ticket red (Netflix/Seat Red) */
+  --color-cinema-gold: #f5c518;     /* Oscar gold / IMDb yellow for ratings & highlights */
+  --color-cinema-popcorn: #fdf5e2;  /* Popcorn cream / soft warm light for backgrounds/text */
+  --color-cinema-black: #0a0a0c;    /* Deep movie theater room black for dark mode backgrounds */
+  --color-cinema-charcoal: #18181c; /* Celluloid film strip / dark gray for cards & borders */
+  --color-cinema-gray: #3a3a42;     /* Medium projector body gray */
+  --color-cinema-neon: #00f0ff;     /* Neon marquee cyan/blue for secondary highlights */
+  
+  /* Custom shadows and typography configurations can also be added here */
+}
