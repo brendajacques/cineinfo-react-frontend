@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from './components/Layout.jsx';
-import { Star, Heart, Flame, Sparkles, MessageSquare, Play, CheckCircle2 } from 'lucide-react';
+import { Star, Heart, Flame, Sparkles, MessageSquare, Play, CheckCircle2, Search } from 'lucide-react';
 import MovieCard from './components/MovieCard.jsx';
 import SearchBar from './components/SearchBar.jsx';
 import { useAuth } from './context/AuthContext.jsx';
@@ -121,7 +121,7 @@ function App() {
               : "https://image.tmdb.org/t/p/original/fgsHxz21B27hOOqQBiw9L6yWcM7.jpg"
             } 
             alt={featuredMovie?.title || "A Freira"} 
-            className="h-full w-full object-cover opacity-65 object-right-top animate-fade-in"
+            className="h-full w-full object-cover opacity-65 object-top-right animate-fade-in"
           />
           <div className="absolute inset-0 bg-linear-to-r from-cinema-black via-cinema-black/50 to-transparent"></div>
         </div>

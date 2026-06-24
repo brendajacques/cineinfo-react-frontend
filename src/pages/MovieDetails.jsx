@@ -125,8 +125,8 @@ function MovieDetails() {
                 alt="" 
                 className="h-full w-full object-cover opacity-25 blur-[1px] scale-105"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-cinema-black via-cinema-black/85 to-transparent"></div>
-              <div className="absolute inset-0 bg-gradient-to-r from-cinema-black/90 via-transparent to-transparent"></div>
+              <div className="absolute inset-0 bg-linear-to-t from-cinema-black via-cinema-black/85 to-transparent"></div>
+              <div className="absolute inset-0 bg-linear-to-r from-cinema-black/90 via-transparent to-transparent"></div>
             </div>
           )}
 
@@ -141,7 +141,7 @@ function MovieDetails() {
                     className="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-105" 
                   />
                 ) : (
-                  <div className="flex aspect-[2/3] w-full flex-col items-center justify-center bg-cinema-charcoal p-4 text-center">
+                  <div className="flex aspect-2/3 w-full flex-col items-center justify-center bg-cinema-charcoal p-4 text-center">
                     <Film className="h-12 w-12 text-cinema-gray mb-3" />
                     <span className="text-sm font-bold text-cinema-popcorn">{movie.title}</span>
                   </div>
@@ -303,14 +303,14 @@ function MovieDetails() {
                 </div>
                 
                 <div className="pt-3 pb-3">
-                  <span className="text-[10px] uppercase font-bold tracking-wider text-cinema-popcorn/40 block mb-1 flex items-center gap-1">
+                  <span className="text-[10px] uppercase font-bold tracking-wider text-cinema-popcorn/40 block mb-1 items-center gap-1">
                     <DollarSign className="h-3 w-3 text-cinema-gold" /> Orçamento
                   </span>
                   <span className="text-sm font-semibold text-cinema-popcorn">{formatCurrency(movie.budget)}</span>
                 </div>
 
                 <div className="pt-3 pb-3">
-                  <span className="text-[10px] uppercase font-bold tracking-wider text-cinema-popcorn/40 block mb-1 flex items-center gap-1">
+                  <span className="text-[10px] uppercase font-bold tracking-wider text-cinema-popcorn/40 block mb-1 items-center gap-1">
                     <DollarSign className="h-3 w-3 text-cinema-neon" /> Receita
                   </span>
                   <span className="text-sm font-semibold text-cinema-popcorn">{formatCurrency(movie.revenue)}</span>
@@ -318,7 +318,7 @@ function MovieDetails() {
 
                 {movie.production_countries && movie.production_countries.length > 0 && (
                   <div className="pt-3">
-                    <span className="text-[10px] uppercase font-bold tracking-wider text-cinema-popcorn/40 block mb-1 flex items-center gap-1">
+                    <span className="text-[10px] uppercase font-bold tracking-wider text-cinema-popcorn/40 block mb-1 items-center gap-1">
                       <Globe className="h-3 w-3 text-cinema-popcorn/60" /> País de Produção
                     </span>
                     <span className="text-sm font-semibold text-cinema-popcorn leading-relaxed block">
