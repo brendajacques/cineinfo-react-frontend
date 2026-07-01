@@ -3,32 +3,23 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 import Layout from '../components/Layout.jsx';
 import { Mail, Lock, Eye, EyeOff, Film, CheckCircle2, AlertCircle, ArrowRight } from 'lucide-react';
-
-/**
- * Página de Login da Plataforma CineInfo.
- * Apresenta um formulário de login premium com validações e feedback visual dinâmico.
- */
 function Login() {
   const { login, user } = useAuth();
   const navigate = useNavigate();
 
-  // Estados dos inputs
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
-  // Estados de controle da interface
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
 
-  // Se o usuário já estiver logado, redireciona para a Home
   if (user) {
     setTimeout(() => navigate('/'), 0);
     return null;
   }
 
-  // Validação simples de formato de e-mail
   const validateEmail = (val) => {
     return /\S+@\S+\.\S+/.test(val);
   };
@@ -53,7 +44,6 @@ function Login() {
       return;
     }
 
-    // Inicia estado de carregamento simulando API
     setLoading(true);
 
     setTimeout(() => {
@@ -62,7 +52,6 @@ function Login() {
 
       if (isSuccess) {
         setSuccessMsg('Login efetuado com sucesso! Redirecionando...');
-        // Redireciona para a Home após 1.5 segundos
         setTimeout(() => {
           navigate('/');
         }, 1500);
@@ -75,12 +64,10 @@ function Login() {
   return (
     <Layout>
       <div className="relative min-h-[70vh] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 overflow-hidden">
-        {/* Glows decorativos de fundo */}
         <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 -z-10 h-[380px] w-[380px] rounded-full bg-cinema-red/10 blur-[80px]"></div>
         <div className="absolute right-10 bottom-10 -z-10 h-72 w-72 rounded-full bg-cinema-neon/5 blur-[90px]"></div>
 
         <div className="w-full max-w-md space-y-8">
-          {/* Cabeçalho da página */}
           <div className="text-center space-y-2">
             <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-cinema-red text-cinema-popcorn shadow-[0_0_20px_rgba(229,9,20,0.55)]">
               <Film className="h-7 w-7 animate-pulse" />
@@ -93,11 +80,9 @@ function Login() {
             </p>
           </div>
 
-          {/* Card Glassmorphic de Login */}
           <div className="rounded-2xl border border-cinema-charcoal bg-cinema-charcoal/30 backdrop-blur-md p-6 sm:p-8 shadow-[0_15px_30px_rgba(0,0,0,0.6)]">
             <form onSubmit={handleSubmit} className="space-y-6">
-              
-              {/* Campo E-mail */}
+
               <div className="space-y-2">
                 <label className="block text-xs font-bold uppercase tracking-wider text-cinema-popcorn/60">
                   Endereço de E-mail
@@ -115,7 +100,6 @@ function Login() {
                 </div>
               </div>
 
-              {/* Campo Senha */}
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <label className="block text-xs font-bold uppercase tracking-wider text-cinema-popcorn/60">
@@ -146,7 +130,6 @@ function Login() {
                 </div>
               </div>
 
-              {/* Checkbox Lembrar */}
               <div className="flex items-center justify-between text-xs">
                 <label className="flex items-center gap-2 cursor-pointer text-cinema-popcorn/70">
                   <input
@@ -158,7 +141,6 @@ function Login() {
                 </label>
               </div>
 
-              {/* Mensagem de Erro */}
               {errorMsg && (
                 <div className="flex items-start gap-2.5 rounded-xl bg-cinema-red/10 border border-cinema-red/30 p-3.5 text-xs text-red-400 animate-headShake">
                   <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
@@ -166,7 +148,6 @@ function Login() {
                 </div>
               )}
 
-              {/* Mensagem de Sucesso */}
               {successMsg && (
                 <div className="flex items-start gap-2.5 rounded-xl bg-green-500/10 border border-green-500/30 p-3.5 text-xs text-green-400">
                   <CheckCircle2 className="h-4 w-4 shrink-0 mt-0.5" />
@@ -174,7 +155,6 @@ function Login() {
                 </div>
               )}
 
-              {/* Botão de Enviar */}
               <button
                 type="submit"
                 disabled={loading}

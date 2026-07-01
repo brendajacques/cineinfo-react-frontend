@@ -4,10 +4,7 @@ import { useAuth } from '../context/AuthContext.jsx';
 import Layout from '../components/Layout.jsx';
 import { Star, Heart, ArrowLeft, Clock, Calendar, Film, Sparkles, DollarSign, Globe, Clapperboard } from 'lucide-react';
 
-/**
- * Página de Detalhes do Filme.
- * Recupera os detalhes do filme da API TMDB usando o ID dinâmico da URL.
- */
+
 function MovieDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -104,8 +101,7 @@ function MovieDetails() {
   return (
     <Layout>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8">
-        
-        {/* Botão Voltar */}
+
         <div className="flex justify-start">
           <button
             onClick={() => navigate(-1)}
@@ -116,7 +112,6 @@ function MovieDetails() {
           </button>
         </div>
 
-        {/* Hero Section */}
         <div className="relative overflow-hidden rounded-3xl border border-cinema-charcoal/80 bg-cinema-charcoal/20 shadow-2xl">
           {backdropUrl && (
             <div className="absolute inset-0 -z-10">
@@ -131,7 +126,6 @@ function MovieDetails() {
           )}
 
           <div className="grid grid-cols-1 md:grid-cols-12 gap-8 p-6 md:p-10 items-center">
-            {/* Pôster do Filme */}
             <div className="md:col-span-4 lg:col-span-3 mx-auto md:mx-0 w-full max-w-[260px] md:max-w-none">
               <div className="group relative overflow-hidden rounded-2xl border-2 border-cinema-charcoal/80 bg-cinema-black shadow-[0_15px_30px_rgba(0,0,0,0.7)] transition-all duration-500 hover:border-cinema-gold/50 hover:shadow-[0_20px_40px_rgba(245,197,24,0.15)]">
                 {posterUrl ? (
@@ -149,10 +143,8 @@ function MovieDetails() {
               </div>
             </div>
 
-            {/* Informações Principais */}
             <div className="md:col-span-8 lg:col-span-9 space-y-6 text-left">
               <div className="space-y-3">
-                {/* Gêneros Badges */}
                 <div className="flex flex-wrap gap-2">
                   {movie.genres?.map(genre => (
                     <span 
@@ -175,7 +167,6 @@ function MovieDetails() {
                 )}
               </div>
 
-              {/* Grid de Stats Rápidas */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 p-4 rounded-2xl border border-cinema-charcoal/60 bg-cinema-black/60 backdrop-blur-sm">
                 <div className="space-y-1">
                   <span className="text-[10px] uppercase font-bold tracking-wider text-cinema-popcorn/50 flex items-center gap-1.5">
@@ -214,7 +205,6 @@ function MovieDetails() {
                 </div>
               </div>
 
-              {/* Ações (Favoritar) */}
               <div className="flex flex-wrap items-center gap-4 pt-2">
                 <button 
                   onClick={() => toggleFavorite(movie.id)}
@@ -232,13 +222,10 @@ function MovieDetails() {
           </div>
         </div>
 
-        {/* Informações Secundárias: Sinopse, Elenco, Info Técnica */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 text-left">
-          
-          {/* Coluna da Esquerda (Sinopse e Elenco) */}
+
           <div className="lg:col-span-8 space-y-8">
-            
-            {/* Seção da Sinopse */}
+     
             <section className="rounded-2xl border border-cinema-charcoal/60 bg-cinema-charcoal/15 backdrop-blur-xs p-6 sm:p-8 space-y-4">
               <div className="flex items-center gap-2.5 pb-3 border-b border-cinema-charcoal/60">
                 <Sparkles className="h-5 w-5 text-cinema-gold" />
@@ -249,7 +236,6 @@ function MovieDetails() {
               </p>
             </section>
 
-            {/* Seção do Elenco */}
             <section className="rounded-2xl border border-cinema-charcoal/60 bg-cinema-charcoal/15 backdrop-blur-xs p-6 sm:p-8 space-y-6">
               <div className="flex items-center gap-2.5 pb-3 border-b border-cinema-charcoal/60">
                 <Clapperboard className="h-5 w-5 text-cinema-neon" />
@@ -288,7 +274,6 @@ function MovieDetails() {
 
           </div>
 
-          {/* Coluna da Direita (Informações Técnicas) */}
           <div className="lg:col-span-4 space-y-8">
             <section className="rounded-2xl border border-cinema-charcoal/60 bg-cinema-charcoal/15 backdrop-blur-xs p-6 sm:p-8 space-y-6">
               <div className="flex items-center gap-2.5 pb-3 border-b border-cinema-charcoal/60">

@@ -19,7 +19,7 @@ function Header() {
   };
 
   const navLinks = [
-    { to: '/', label: 'Filmes & Séries', icon: Film },
+    { to: '/', label: 'Filmes', icon: Film },
     { to: '/personagens', label: 'Personagens', icon: User },
     { to: '/favoritos', label: 'Favoritos', icon: Heart, badge: favoritesCount },
     { to: '/sugerir-resenha', label: 'Sugerir Resenha', icon: MessageSquare },

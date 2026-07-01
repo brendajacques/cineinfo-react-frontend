@@ -45,7 +45,6 @@ function App() {
           throw new Error('As variáveis de ambiente do TMDB não foram configuradas corretamente.');
         }
 
-        // Busca o filme em destaque (A Freira)
         try {
           const featuredUrl = `${baseUrl}/movie/439079?language=pt-BR`;
           const featuredResponse = await fetch(featuredUrl, {
@@ -111,9 +110,7 @@ function App() {
 
   return (
     <Layout>
-      {/* Hero Banner Section */}
       <section className="relative overflow-hidden rounded-3xl border border-cinema-charcoal bg-cinema-black p-8 md:p-12 mb-12 shadow-[0_15px_30px_rgba(0,0,0,0.6)]">
-        {/* Background Movie Backdrop */}
         <div className="absolute inset-0">
           <img 
             src={featuredMovie?.backdrop_path 
@@ -126,7 +123,6 @@ function App() {
           <div className="absolute inset-0 bg-linear-to-r from-cinema-black via-cinema-black/50 to-transparent"></div>
         </div>
 
-        {/* Background Decorative Neon Glow */}
         <div className="absolute right-0 top-0 h-72 w-72 rounded-full bg-cinema-red/10 blur-[80px] pointer-events-none"></div>
         <div className="absolute -left-10 -bottom-10 h-60 w-60 rounded-full bg-cinema-neon/5 blur-[80px] pointer-events-none"></div>
 
@@ -163,7 +159,6 @@ function App() {
           </div>
         </div>
       </section>
-      {/* Grid: Filmes Populares (TMDB API) */}
       <section className="mb-16">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
           <div className="flex items-center gap-3">
@@ -177,11 +172,9 @@ function App() {
           </span>
         </div>
 
-        {/* Componente de Busca */}
         <SearchBar value={searchTerm} onChange={setSearchTerm} />
 
         {loadingTmdb ? (
-          /* Shimmer Loading Skeleton */
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {[...Array(8)].map((_, index) => (
               <div 
@@ -241,11 +234,8 @@ function App() {
         )}
       </section>
 
-
-      {/* Grid: Review Panel & Interactive Suggestions */}
       <section className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mb-8">
         
-        {/* Left: Review Suggestion Form (Panel) */}
         <div className="lg:col-span-7 rounded-2xl border border-cinema-charcoal bg-cinema-charcoal/20 p-6 md:p-8 space-y-6">
           <div className="flex items-center gap-3">
             <MessageSquare className="h-6 w-6 text-cinema-red" />
@@ -316,7 +306,6 @@ function App() {
           </form>
         </div>
 
-        {/* Right: Community Requests Panel List */}
         <div className="lg:col-span-5 rounded-2xl border border-cinema-charcoal bg-cinema-charcoal/10 p-6 space-y-6">
           <div className="flex items-center justify-between">
             <h4 className="text-lg font-bold text-cinema-popcorn">Sugestões Recentes</h4>
