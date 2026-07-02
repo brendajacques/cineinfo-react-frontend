@@ -64,6 +64,7 @@ export function AuthProvider({ children }) {
     const mockUser = {
       name: username,
       email: email,
+      perfil: email.toLowerCase().includes('admin') ? 'Administrador' : 'Usuário',
       avatar: `https://api.dicebear.com/7.x/bottts/svg?seed=${namePart}`
     };
 
@@ -92,7 +93,7 @@ export function AuthProvider({ children }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, favorites, toggleFavorite }}>
+    <AuthContext.Provider value={{ user, isAuthenticated: !!user, login, logout, favorites, toggleFavorite }}>
       {children}
     </AuthContext.Provider>
   );

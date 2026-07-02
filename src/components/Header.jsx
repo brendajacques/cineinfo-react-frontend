@@ -94,7 +94,7 @@ function Header() {
                   </div>
                   <div className="hidden xl:flex flex-col">
                     <span className="text-xs font-bold text-cinema-popcorn">{user.name}</span>
-                    <span className="text-[9px] text-cinema-gray">Membro</span>
+                    <span className="text-[9px] text-cinema-gray">{user.perfil || 'Membro'}</span>
                   </div>
                 </div>
                 <button 
@@ -168,7 +168,9 @@ function Header() {
                     <img src={user.avatar} alt={user.name} className="h-full w-full" />
                   </div>
                   <div>
-                    <h4 className="text-sm font-bold text-cinema-popcorn">{user.name}</h4>
+                    <h4 className="text-sm font-bold text-cinema-popcorn">
+                      {user.name} <span className="text-[10px] text-cinema-gold font-normal">({user.perfil || 'Membro'})</span>
+                    </h4>
                     <p className="text-[10px] text-cinema-gray">{user.email}</p>
                   </div>
                 </div>
