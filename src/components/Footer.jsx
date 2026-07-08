@@ -86,31 +86,36 @@ function Footer() {
             </ul>
           </div>
 
-          {/* Column 2: Populares */}
+          {/* Column 2: Gêneros */}
           <div>
             <h4 className="text-sm font-bold uppercase tracking-wider text-cinema-popcorn border-b border-cinema-charcoal pb-2 mb-4">
-              Categorias
+              Gêneros
             </h4>
             <ul className="space-y-2.5 text-sm">
               <li>
-                <span className="hover:text-cinema-gold cursor-pointer transition-colors duration-200 flex items-center gap-1">
-                  <ChevronRight className="h-3 w-3 text-cinema-gray" /> Blockbusters
-                </span>
+                <Link to="/filmes?genre=28" className="hover:text-cinema-gold transition-colors duration-200 flex items-center gap-1">
+                  <ChevronRight className="h-3 w-3 text-cinema-red" /> Ação
+                </Link>
               </li>
               <li>
-                <span className="hover:text-cinema-gold cursor-pointer transition-colors duration-200 flex items-center gap-1">
-                  <ChevronRight className="h-3 w-3 text-cinema-gray" /> Cultura Pop & Geek
-                </span>
+                <Link to="/filmes?genre=35" className="hover:text-cinema-gold transition-colors duration-200 flex items-center gap-1">
+                  <ChevronRight className="h-3 w-3 text-cinema-red" /> Comédia
+                </Link>
               </li>
               <li>
-                <span className="hover:text-cinema-gold cursor-pointer transition-colors duration-200 flex items-center gap-1">
-                  <ChevronRight className="h-3 w-3 text-cinema-gray" /> Animes & Animações
-                </span>
+                <Link to="/filmes?genre=18" className="hover:text-cinema-gold transition-colors duration-200 flex items-center gap-1">
+                  <ChevronRight className="h-3 w-3 text-cinema-red" /> Drama
+                </Link>
               </li>
               <li>
-                <span className="hover:text-cinema-gold cursor-pointer transition-colors duration-200 flex items-center gap-1">
-                  <ChevronRight className="h-3 w-3 text-cinema-gray" /> Festivais & Clássicos
-                </span>
+                <Link to="/filmes?genre=878" className="hover:text-cinema-gold transition-colors duration-200 flex items-center gap-1">
+                  <ChevronRight className="h-3 w-3 text-cinema-red" /> Ficção Científica
+                </Link>
+              </li>
+              <li>
+                <Link to="/filmes?genre=27" className="hover:text-cinema-gold transition-colors duration-200 flex items-center gap-1">
+                  <ChevronRight className="h-3 w-3 text-cinema-red" /> Terror
+                </Link>
               </li>
             </ul>
           </div>

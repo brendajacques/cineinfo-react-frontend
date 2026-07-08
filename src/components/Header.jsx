@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
-import { Search, Film, Heart, MessageSquare, Menu, X, User, LogOut } from 'lucide-react';
+import { Search, Film, Heart, MessageSquare, Menu, X, User, LogOut, Shield } from 'lucide-react';
 import { useAuth } from '../context/AuthContext.jsx';
 import { useFavorites } from '../context/FavoritesContext.jsx';
 
@@ -27,6 +27,10 @@ function Header() {
     { to: '/favoritos', label: 'Favoritos', icon: Heart, badge: favoritesCount },
     { to: '/sugerir-resenha', label: 'Sugerir Resenha', icon: MessageSquare },
   ];
+
+  if (user?.perfil === 'Administrador') {
+    navLinks.push({ to: '/admin', label: 'Admin', icon: Shield });
+  }
 
   return (
     <header className={`${
