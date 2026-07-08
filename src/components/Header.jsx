@@ -1,10 +1,12 @@
 import { useState } from 'react';
-import { Link, NavLink } from 'react-router-dom';
+import { Link, NavLink, useLocation } from 'react-router-dom';
 import { Search, Film, Heart, MessageSquare, Menu, X, User, LogOut } from 'lucide-react';
 import { useAuth } from '../context/AuthContext.jsx';
 import { useFavorites } from '../context/FavoritesContext.jsx';
 
 function Header() {
+  const location = useLocation();
+  const isHome = location.pathname === '/';
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const { user, logout } = useAuth();
@@ -27,7 +29,11 @@ function Header() {
   ];
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-cinema-charcoal bg-cinema-black/85 backdrop-blur-md transition-all duration-300">
+    <header className={`${
+      isHome 
+        ? 'absolute top-0 left-0 right-0 z-50 w-full border-b border-transparent bg-gradient-to-b from-black/80 via-black/40 to-transparent' 
+        : 'sticky top-0 z-50 w-full border-b border-cinema-charcoal bg-cinema-black/85 backdrop-blur-md'
+    } transition-all duration-300`}>
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-20 items-center justify-between gap-4">
           
