@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext.jsx';
+import { useFavorites } from '../context/FavoritesContext.jsx';
 import Layout from '../components/Layout.jsx';
 import MovieCard from '../components/MovieCard.jsx';
 import { Heart, Film, ArrowLeft } from 'lucide-react';
 
 function Favorites() {
   const navigate = useNavigate();
-  const { favorites, toggleFavorite } = useAuth();
+  const { favorites, toggleFavorite } = useFavorites();
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);

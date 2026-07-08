@@ -5,6 +5,7 @@ import { Star, Heart, Flame, Sparkles, MessageSquare, Play, CheckCircle2, Search
 import MovieCard from './components/MovieCard.jsx';
 import SearchBar from './components/SearchBar.jsx';
 import { useAuth } from './context/AuthContext.jsx';
+import { useFavorites } from './context/FavoritesContext.jsx';
 
 function App() {
   const navigate = useNavigate();
@@ -17,7 +18,7 @@ function App() {
   ]);
   const [successMsg, setSuccessMsg] = useState(false);
 
-  const { favorites, toggleFavorite } = useAuth();
+  const { favorites, toggleFavorite } = useFavorites();
 
   const [tmdbMovies, setTmdbMovies] = useState([]);
   const [featuredMovie, setFeaturedMovie] = useState(null);

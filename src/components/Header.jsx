@@ -2,11 +2,13 @@ import { useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { Search, Film, Heart, MessageSquare, Menu, X, User, LogOut } from 'lucide-react';
 import { useAuth } from '../context/AuthContext.jsx';
+import { useFavorites } from '../context/FavoritesContext.jsx';
 
 function Header() {
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const { user, logout, favorites } = useAuth();
+  const { user, logout } = useAuth();
+  const { favorites } = useFavorites();
   
   const favoritesCount = favorites.length;
 

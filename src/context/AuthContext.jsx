@@ -14,16 +14,6 @@ export function AuthProvider({ children }) {
   });
 
 
-  const [favorites, setFavorites] = useState(() => {
-    try {
-      const savedFavs = localStorage.getItem('cineinfo_favorites');
-      return savedFavs ? JSON.parse(savedFavs) : [1, 2];
-    } catch (e) {
-      console.error('Erro ao ler cineinfo_favorites do localStorage:', e);
-      return [1, 2];
-    }
-  });
-
   useEffect(() => {
     if (user) {
       localStorage.setItem('cineinfo_user', JSON.stringify(user));
@@ -31,10 +21,6 @@ export function AuthProvider({ children }) {
       localStorage.removeItem('cineinfo_user');
     }
   }, [user]);
-
-  useEffect(() => {
-    localStorage.setItem('cineinfo_favorites', JSON.stringify(favorites));
-  }, [favorites]);
 
   /**
    * @param {string} email - E-mail digitado no login
@@ -62,19 +48,8 @@ export function AuthProvider({ children }) {
     setUser(null);
   };
 
-  /** 
-   * @param {number|string} id - Identificador do filme
-   */
-  const toggleFavorite = (id) => {
-    setFavorites((prevFavs) => 
-      prevFavs.includes(id) 
-        ? prevFavs.filter((favId) => favId !== id) 
-        : [...prevFavs, id]
-    );
-  };
-
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated: !!user, login, logout, favorites, toggleFavorite }}>
+    <AuthContext.Provider value={{ user, isAuthenticated: !!user, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
+import { useFavorites } from '../context/FavoritesContext.jsx';
 import Layout from '../components/Layout.jsx';
 import { Star, Heart, ArrowLeft, Clock, Calendar, Film, Sparkles } from 'lucide-react';
 
@@ -8,7 +9,7 @@ import { Star, Heart, ArrowLeft, Clock, Calendar, Film, Sparkles } from 'lucide-
 function Filme() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { favorites, toggleFavorite } = useAuth();
+  const { favorites, toggleFavorite } = useFavorites();
   const [movie, setMovie] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
