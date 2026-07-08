@@ -6,10 +6,15 @@ export function FavoritesProvider({ children }) {
   const [favorites, setFavorites] = useState(() => {
     try {
       const savedFavs = localStorage.getItem('cineinfo_favorites');
-      return savedFavs ? JSON.parse(savedFavs) : [1, 2];
+      if (savedFavs) {
+        const parsed = JSON.parse(savedFavs);
+        // Remove os IDs mockados legados (1 e 2) caso existam
+        return parsed.filter(id => id !== 1 && id !== 2);
+      }
+      return [];
     } catch (e) {
       console.error('Erro ao ler cineinfo_favorites do localStorage:', e);
-      return [1, 2];
+      return [];
     }
   });
 
