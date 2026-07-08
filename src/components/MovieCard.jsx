@@ -73,7 +73,7 @@ function MovieCard({ movie, isFavorite, onFavoriteToggle, onDetailsClick }) {
 
         {/* Badge de Nota (Canto Superior Esquerdo) */}
         {rating !== 'N/A' && (
-          <div className="absolute left-3 top-3 flex items-center gap-1 rounded-full bg-cinema-black/85 border border-cinema-charcoal px-2.5 py-1 text-xs font-bold text-cinema-gold shadow-[0_2px_8px_rgba(0,0,0,0.5)]">
+          <div className="absolute left-3 top-3 z-10 flex items-center gap-1 rounded-full bg-cinema-black/85 border border-cinema-charcoal px-2.5 py-1 text-xs font-bold text-cinema-gold shadow-[0_2px_8px_rgba(0,0,0,0.5)]">
             <Star className="h-3 w-3 fill-cinema-gold text-cinema-gold" />
             <span>{rating}</span>
           </div>
@@ -82,7 +82,7 @@ function MovieCard({ movie, isFavorite, onFavoriteToggle, onDetailsClick }) {
         {/* Botão de Favorito (Canto Superior Direito) */}
         <button 
           onClick={handleFavoriteClick}
-          className={`absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full border transition-all duration-300 shadow-[0_2px_8px_rgba(0,0,0,0.5)] ${
+          className={`absolute right-3 top-3 z-10 flex h-9 w-9 items-center justify-center rounded-full border transition-all duration-300 shadow-[0_2px_8px_rgba(0,0,0,0.5)] ${
             isFavorite 
               ? 'border-cinema-red bg-cinema-red/20 text-cinema-red shadow-[0_0_12px_rgba(229,9,20,0.4)] scale-110' 
               : 'border-cinema-charcoal bg-cinema-black/85 text-cinema-popcorn hover:border-cinema-red hover:text-cinema-red hover:scale-110'
