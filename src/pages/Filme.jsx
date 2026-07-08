@@ -207,8 +207,8 @@ function Filme() {
                 <button
                   onClick={() => toggleFavorite(movie.id)}
                   className={`flex items-center gap-2 rounded-full border px-6 py-3 text-sm font-bold transition-all duration-300 ${isFav
-                      ? 'border-cinema-red bg-cinema-red/15 text-cinema-red shadow-[0_0_12px_rgba(229,9,20,0.3)]'
-                      : 'border-cinema-gray bg-cinema-charcoal/40 text-cinema-popcorn hover:border-cinema-gold hover:text-cinema-gold'
+                    ? 'border-cinema-red bg-cinema-red/15 text-cinema-red shadow-[0_0_12px_rgba(229,9,20,0.3)]'
+                    : 'border-cinema-gray bg-cinema-charcoal/40 text-cinema-popcorn hover:border-cinema-gold hover:text-cinema-gold'
                     }`}
                 >
                   <Heart className={`h-4 w-4 ${isFav ? 'fill-cinema-red' : ''}`} />

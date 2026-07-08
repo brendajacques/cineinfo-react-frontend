@@ -23,13 +23,13 @@ function MovieCard({ movie, isFavorite, onFavoriteToggle, onDetailsClick }) {
   } = movie;
 
   // Monta a URL completa do pôster usando o tamanho w500 recomendado pelo TMDB
-  const imageUrl = poster_path 
-    ? `https://image.tmdb.org/t/p/w500${poster_path}` 
+  const imageUrl = poster_path
+    ? `https://image.tmdb.org/t/p/w500${poster_path}`
     : null;
 
   // Extrai o ano de lançamento de forma segura
-  const releaseYear = release_date 
-    ? new Date(release_date).getFullYear() 
+  const releaseYear = release_date
+    ? new Date(release_date).getFullYear()
     : 'N/A';
 
   // Formata a média de votos para uma casa decimal
@@ -46,16 +46,16 @@ function MovieCard({ movie, isFavorite, onFavoriteToggle, onDetailsClick }) {
   };
 
   return (
-    <Link 
+    <Link
       to={`/filme/${id}`}
       className="group relative flex flex-col overflow-hidden rounded-2xl border border-cinema-charcoal bg-cinema-charcoal/30 hover:bg-cinema-charcoal/50 hover:border-cinema-gray/80 transition-all duration-300 hover:shadow-[0_8px_30px_rgba(0,0,0,0.7)] hover:-translate-y-1 cursor-pointer"
     >
       {/* Imagem do Pôster e Overlays */}
       <div className="relative aspect-2/3 w-full overflow-hidden bg-cinema-black">
         {imageUrl ? (
-          <img 
-            src={imageUrl} 
-            alt={title} 
+          <img
+            src={imageUrl}
+            alt={title}
             loading="lazy"
             className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105 group-hover:opacity-90"
           />
@@ -80,13 +80,12 @@ function MovieCard({ movie, isFavorite, onFavoriteToggle, onDetailsClick }) {
         )}
 
         {/* Botão de Favorito (Canto Superior Direito) */}
-        <button 
+        <button
           onClick={handleFavoriteClick}
-          className={`absolute right-3 top-3 z-10 flex h-9 w-9 items-center justify-center rounded-full border transition-all duration-300 shadow-[0_2px_8px_rgba(0,0,0,0.5)] ${
-            isFavorite 
-              ? 'border-cinema-red bg-cinema-red/20 text-cinema-red shadow-[0_0_12px_rgba(229,9,20,0.4)] scale-110' 
+          className={`absolute right-3 top-3 z-10 flex h-9 w-9 items-center justify-center rounded-full border transition-all duration-300 shadow-[0_2px_8px_rgba(0,0,0,0.5)] ${isFavorite
+              ? 'border-cinema-red bg-cinema-red/20 text-cinema-red shadow-[0_0_12px_rgba(229,9,20,0.4)] scale-110'
               : 'border-cinema-charcoal bg-cinema-black/85 text-cinema-popcorn hover:border-cinema-red hover:text-cinema-red hover:scale-110'
-          }`}
+            }`}
           aria-label={isFavorite ? "Remover dos favoritos" : "Adicionar aos favoritos"}
         >
           <Heart className={`h-4.5 w-4.5 transition-transform duration-300 active:scale-75 ${isFavorite ? 'fill-cinema-red' : ''}`} />
@@ -126,7 +125,7 @@ function MovieCard({ movie, isFavorite, onFavoriteToggle, onDetailsClick }) {
         {/* Rodapé do Card */}
         <div className="mt-4 pt-3 border-t border-cinema-charcoal flex items-center justify-between text-[11px]">
           <span className="font-medium text-cinema-popcorn/40">TMDB API</span>
-          <button 
+          <button
             type="button"
             onClick={(e) => {
               e.stopPropagation();
