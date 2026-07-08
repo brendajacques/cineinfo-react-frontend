@@ -247,13 +247,13 @@ function App() {
 
           <form onSubmit={handleAddReview} className="space-y-4">
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-cinema-popcorn/60 mb-2">Título do Filme/Série/Personagem</label>
+              <label className="block text-xs font-bold uppercase tracking-wider text-cinema-popcorn/60 mb-2">Título do Filme/Série</label>
               <input
                 type="text"
                 required
                 value={reviewTitle}
                 onChange={(e) => setReviewTitle(e.target.value)}
-                placeholder="Ex: Matrix Resurrections, Homem de Ferro..."
+                placeholder="Ex: Matrix Resurrections, Stranger Things..."
                 className="w-full rounded-lg border border-cinema-charcoal bg-cinema-black/40 px-4 py-2.5 text-sm text-cinema-popcorn placeholder-cinema-gray outline-none focus:border-cinema-red"
               />
             </div>
@@ -268,7 +268,6 @@ function App() {
                 >
                   <option value="filme">Filme</option>
                   <option value="série">Série</option>
-                  <option value="personagem">Personagem</option>
                 </select>
               </div>
               <div className="flex items-end">

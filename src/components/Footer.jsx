@@ -55,7 +55,7 @@ function Footer() {
               </span>
             </Link>
             <p className="text-sm leading-relaxed text-cinema-popcorn/60">
-              O seu portal definitivo para explorar o universo das telas. Busque seus títulos e personagens favoritos, marque seus preferidos e compartilhe sua paixão.
+              O seu portal definitivo para explorar o universo das telas. Busque seus títulos favoritos, marque seus preferidos e compartilhe sua paixão.
             </p>
             <div className="italic text-xs border-l-2 border-cinema-gold pl-3 text-cinema-gold/80 py-1 mt-2">
               "Que a Força esteja com você." — Star Wars
@@ -71,11 +71,6 @@ function Footer() {
               <li>
                 <Link to="/" className="flex items-center gap-1 hover:text-cinema-gold transition-colors duration-200">
                   <ChevronRight className="h-3 w-3 text-cinema-red" /> Filmes & Séries
-                </Link>
-              </li>
-              <li>
-                <Link to="/personagens" className="flex items-center gap-1 hover:text-cinema-gold transition-colors duration-200">
-                  <ChevronRight className="h-3 w-3 text-cinema-red" /> Personagens
                 </Link>
               </li>
               <li>

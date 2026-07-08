@@ -13,14 +13,13 @@ function Header() {
   const handleSearchSubmit = (e) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      alert(`Buscando por: "${searchQuery}" em Filmes, Séries e Personagens...`);
+      alert(`Buscando por: "${searchQuery}" em Filmes e Séries...`);
       // Implementar redirecionamento ou lógica de busca real futuramente
     }
   };
 
   const navLinks = [
     { to: '/', label: 'Filmes', icon: Film },
-    { to: '/personagens', label: 'Personagens', icon: User },
     { to: '/favoritos', label: 'Favoritos', icon: Heart, badge: favoritesCount },
     { to: '/sugerir-resenha', label: 'Sugerir Resenha', icon: MessageSquare },
   ];
@@ -32,9 +31,6 @@ function Header() {
           
           {/* Logo Section */}
           <Link to="/" className="flex items-center gap-2 group shrink-0">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-cinema-red text-cinema-popcorn shadow-[0_0_15px_rgba(229,9,20,0.5)] transition-transform duration-300 group-hover:scale-110">
-              <Film className="h-5 w-5 animate-pulse" />
-            </div>
             <span className="text-2xl font-black tracking-wider text-cinema-popcorn transition-colors group-hover:text-cinema-gold">
               CINE<span className="text-cinema-red">INFO</span>
             </span>
@@ -47,7 +43,7 @@ function Header() {
           >
             <input
               type="text"
-              placeholder="Buscar filmes, séries, personagens..."
+              placeholder="Buscar filmes, séries..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full rounded-full border border-cinema-gray bg-cinema-charcoal/60 px-5 py-2 pl-12 text-sm text-cinema-popcorn placeholder-cinema-gray/80 outline-none transition-all duration-300 focus:border-cinema-gold focus:bg-cinema-charcoal focus:ring-1 focus:ring-cinema-gold/30"
