@@ -1,15 +1,8 @@
-/* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useState, useEffect } from 'react';
 
-// Criamos o Contexto de Autenticação e Estados Compartilhados
 const AuthContext = createContext();
 
-/**
- * Provedor de Autenticação (AuthProvider) que gerencia o estado global de login
- * e sincroniza os favoritos persistindo os dados no localStorage.
- */
 export function AuthProvider({ children }) {
-  // Carrega o usuário inicial do localStorage se já houver sessão
   const [user, setUser] = useState(() => {
     try {
       const savedUser = localStorage.getItem('cineinfo_user');
@@ -20,7 +13,7 @@ export function AuthProvider({ children }) {
     }
   });
 
-  // Carrega a lista de favoritos inicial do localStorage ou usa ids de mock
+
   const [favorites, setFavorites] = useState(() => {
     try {
       const savedFavs = localStorage.getItem('cineinfo_favorites');
@@ -31,7 +24,6 @@ export function AuthProvider({ children }) {
     }
   });
 
-  // Sincroniza o usuário com o localStorage
   useEffect(() => {
     if (user) {
       localStorage.setItem('cineinfo_user', JSON.stringify(user));
@@ -40,15 +32,11 @@ export function AuthProvider({ children }) {
     }
   }, [user]);
 
-  // Sincroniza a lista de favoritos com o localStorage
   useEffect(() => {
     localStorage.setItem('cineinfo_favorites', JSON.stringify(favorites));
   }, [favorites]);
 
   /**
-   * Realiza o login mockado do usuário.
-   * Cria um avatar personalizado baseado no e-mail e salva o estado.
-   * 
    * @param {string} email - E-mail digitado no login
    * @param {string} password - Senha digitada no login
    * @returns {boolean} - Indica sucesso no login
@@ -56,11 +44,9 @@ export function AuthProvider({ children }) {
   const login = (email, password) => {
     if (!email || !password) return false;
 
-    // Extrai o nome a partir do e-mail para exibição
     const namePart = email.split('@')[0];
     const username = namePart.charAt(0).toUpperCase() + namePart.slice(1);
 
-    // Cria um avatar dinâmico usando um serviço público gratuito
     const mockUser = {
       name: username,
       email: email,
@@ -72,16 +58,11 @@ export function AuthProvider({ children }) {
     return true;
   };
 
-  /**
-   * Finaliza a sessão do usuário limpando o estado de autenticação.
-   */
   const logout = () => {
     setUser(null);
   };
 
-  /**
-   * Adiciona ou remove um ID da lista global de favoritos.
-   * 
+  /** 
    * @param {number|string} id - Identificador do filme
    */
   const toggleFavorite = (id) => {
@@ -99,9 +80,6 @@ export function AuthProvider({ children }) {
   );
 }
 
-/**
- * Hook customizado para consumir os dados de autenticação e favoritos.
- */
 export function useAuth() {
   const context = useContext(AuthContext);
   if (!context) {
