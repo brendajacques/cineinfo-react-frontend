@@ -10,3 +10,12 @@
   --color-cinema-gray: #3a3a42;    
   --color-cinema-neon: #00f0ff;     
 }
+
+/* Remover efeitos de zoom/scale e drop shadows de todos os botões */
+button {
+  box-shadow: none !important;
+}
+
+button:hover, button:active, button:focus {
+  transform: none !important;
+}

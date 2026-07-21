@@ -2,14 +2,18 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 import Layout from '../components/Layout.jsx';
-import { Mail, Lock, Eye, EyeOff, Film, CheckCircle2, AlertCircle, ArrowRight } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff, Film, CheckCircle2, AlertCircle, ArrowRight, User } from 'lucide-react';
 function Login() {
-  const { login, user } = useAuth();
+  const { login, register, user } = useAuth();
   const navigate = useNavigate();
 
+  const [isRegister, setIsRegister] = useState(false);
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
@@ -29,6 +33,11 @@ function Login() {
     setErrorMsg('');
     setSuccessMsg('');
 
+    if (isRegister && !name.trim()) {
+      setErrorMsg('Por favor, informe seu nome completo.');
+      return;
+    }
+
     if (!email.trim()) {
       setErrorMsg('Por favor, informe seu endereço de e-mail.');
       return;
@@ -44,19 +53,29 @@ function Login() {
       return;
     }
 
+    if (isRegister && password !== confirmPassword) {
+      setErrorMsg('As senhas digitadas não coincidem.');
+      return;
+    }
+
     setLoading(true);
 
     setTimeout(() => {
-      const isSuccess = login(email, password);
+      let isSuccess = false;
+      if (isRegister) {
+        isSuccess = register(name.trim(), email, password);
+      } else {
+        isSuccess = login(email, password);
+      }
       setLoading(false);
 
       if (isSuccess) {
-        setSuccessMsg('Login efetuado com sucesso! Redirecionando...');
+        setSuccessMsg(isRegister ? 'Conta criada com sucesso! Redirecionando...' : 'Login efetuado com sucesso! Redirecionando...');
         setTimeout(() => {
           navigate('/');
         }, 1500);
       } else {
-        setErrorMsg('Erro ao efetuar login. Verifique suas credenciais.');
+        setErrorMsg(isRegister ? 'Erro ao criar conta. Tente novamente.' : 'Erro ao efetuar login. Verifique suas credenciais.');
       }
     }, 1200);
   };
@@ -73,15 +92,36 @@ function Login() {
               <Film className="h-7 w-7 animate-pulse" />
             </div>
             <h2 className="text-3xl font-black tracking-tight text-cinema-popcorn mt-4">
-              CINE<span className="text-cinema-red">INFO</span> ACESSO
+              CINE<span className="text-cinema-red">INFO</span> {isRegister ? 'CADASTRO' : 'ACESSO'}
             </h2>
             <p className="text-sm text-cinema-popcorn/60">
-              Faça login para salvar seus favoritos e interagir com a comunidade
+              {isRegister
+                ? 'Crie sua conta para salvar seus favoritos e interagir com a comunidade'
+                : 'Faça login para salvar seus favoritos e interagir com a comunidade'}
             </p>
           </div>
 
           <div className="rounded-2xl border border-cinema-charcoal bg-cinema-charcoal/30 backdrop-blur-md p-6 sm:p-8 shadow-[0_15px_30px_rgba(0,0,0,0.6)]">
             <form onSubmit={handleSubmit} className="space-y-6">
+
+              {isRegister && (
+                <div className="space-y-2 animate-fadeIn">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-cinema-popcorn/60">
+                    Nome Completo
+                  </label>
+                  <div className="relative flex items-center">
+                    <User className="absolute left-4 h-4 w-4 text-cinema-gray" />
+                    <input
+                      type="text"
+                      disabled={loading}
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      placeholder="Seu nome completo"
+                      className="w-full rounded-full border border-cinema-charcoal bg-cinema-black/40 px-5 py-3 pl-11 text-sm text-cinema-popcorn placeholder-cinema-gray/80 outline-none transition-all duration-300 focus:border-cinema-red focus:bg-cinema-black/60 focus:ring-1 focus:ring-cinema-red/30"
+                    />
+                  </div>
+                </div>
+              )}
 
               <div className="space-y-2">
                 <label className="block text-xs font-bold uppercase tracking-wider text-cinema-popcorn/60">
@@ -95,7 +135,7 @@ function Login() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="exemplo@cineinfo.com.br"
-                    className="w-full rounded-xl border border-cinema-charcoal bg-cinema-black/40 px-4 py-3 pl-11 text-sm text-cinema-popcorn placeholder-cinema-gray/80 outline-none transition-all duration-300 focus:border-cinema-red focus:bg-cinema-black/60 focus:ring-1 focus:ring-cinema-red/30"
+                    className="w-full rounded-full border border-cinema-charcoal bg-cinema-black/40 px-5 py-3 pl-11 text-sm text-cinema-popcorn placeholder-cinema-gray/80 outline-none transition-all duration-300 focus:border-cinema-red focus:bg-cinema-black/60 focus:ring-1 focus:ring-cinema-red/30"
                   />
                 </div>
               </div>
@@ -105,9 +145,11 @@ function Login() {
                   <label className="block text-xs font-bold uppercase tracking-wider text-cinema-popcorn/60">
                     Senha de Acesso
                   </label>
-                  <span className="text-[10px] text-cinema-neon hover:underline cursor-pointer font-bold">
-                    Esqueceu a senha?
-                  </span>
+                  {!isRegister && (
+                    <span className="text-[10px] text-cinema-neon hover:underline cursor-pointer font-bold">
+                      Esqueceu a senha?
+                    </span>
+                  )}
                 </div>
                 <div className="relative flex items-center">
                   <Lock className="absolute left-4 h-4 w-4 text-cinema-gray" />
@@ -117,7 +159,7 @@ function Login() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="Digite sua senha (mín. 6 caracteres)"
-                    className="w-full rounded-xl border border-cinema-charcoal bg-cinema-black/40 px-4 py-3 pl-11 pr-11 text-sm text-cinema-popcorn placeholder-cinema-gray/80 outline-none transition-all duration-300 focus:border-cinema-red focus:bg-cinema-black/60 focus:ring-1 focus:ring-cinema-red/30"
+                    className="w-full rounded-full border border-cinema-charcoal bg-cinema-black/40 px-5 py-3 pl-11 pr-11 text-sm text-cinema-popcorn placeholder-cinema-gray/80 outline-none transition-all duration-300 focus:border-cinema-red focus:bg-cinema-black/60 focus:ring-1 focus:ring-cinema-red/30"
                   />
                   <button
                     type="button"
@@ -130,16 +172,45 @@ function Login() {
                 </div>
               </div>
 
-              <div className="flex items-center justify-between text-xs">
-                <label className="flex items-center gap-2 cursor-pointer text-cinema-popcorn/70">
-                  <input
-                    type="checkbox"
-                    defaultChecked
-                    className="accent-cinema-red rounded border-cinema-charcoal bg-cinema-black/40"
-                  />
-                  <span>Lembrar de mim neste dispositivo</span>
-                </label>
-              </div>
+              {isRegister && (
+                <div className="space-y-2 animate-fadeIn">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-cinema-popcorn/60">
+                    Confirmar Senha
+                  </label>
+                  <div className="relative flex items-center">
+                    <Lock className="absolute left-4 h-4 w-4 text-cinema-gray" />
+                    <input
+                      type={showConfirmPassword ? 'text' : 'password'}
+                      disabled={loading}
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      placeholder="Confirme sua senha"
+                      className="w-full rounded-full border border-cinema-charcoal bg-cinema-black/40 px-5 py-3 pl-11 pr-11 text-sm text-cinema-popcorn placeholder-cinema-gray/80 outline-none transition-all duration-300 focus:border-cinema-red focus:bg-cinema-black/60 focus:ring-1 focus:ring-cinema-red/30"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      className="absolute right-4 text-cinema-gray hover:text-cinema-popcorn transition-colors"
+                      aria-label={showConfirmPassword ? "Esconder senha" : "Mostrar senha"}
+                    >
+                      {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {!isRegister && (
+                <div className="flex items-center justify-between text-xs">
+                  <label className="flex items-center gap-2 cursor-pointer text-cinema-popcorn/70">
+                    <input
+                      type="checkbox"
+                      defaultChecked
+                      className="accent-cinema-red rounded border-cinema-charcoal bg-cinema-black/40"
+                    />
+                    <span>Lembrar de mim neste dispositivo</span>
+                  </label>
+                </div>
+              )}
 
               {errorMsg && (
                 <div className="flex items-start gap-2.5 rounded-xl bg-cinema-red/10 border border-cinema-red/30 p-3.5 text-xs text-red-400 animate-headShake">
@@ -158,7 +229,7 @@ function Login() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full relative flex items-center justify-center gap-2 rounded-xl bg-cinema-red py-3 px-4 text-sm font-bold text-cinema-popcorn shadow-[0_4px_15px_rgba(229,9,20,0.3)] hover:bg-red-700 hover:scale-[1.01] transition-all duration-200 disabled:opacity-75 disabled:hover:scale-100 disabled:bg-cinema-red/60"
+                className="w-full relative flex items-center justify-center gap-2 rounded-full bg-cinema-red py-3 px-4 text-sm font-bold text-cinema-popcorn hover:bg-red-700 transition-all duration-200 disabled:opacity-75 disabled:bg-cinema-red/60"
               >
                 {loading ? (
                   <>
@@ -166,27 +237,52 @@ function Login() {
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
-                    <span>Autenticando sessão...</span>
+                    <span>{isRegister ? 'Criando conta...' : 'Autenticando sessão...'}</span>
                   </>
                 ) : (
                   <>
-                    <span>Entrar na Plataforma</span>
+                    <span>{isRegister ? 'Criar Minha Conta' : 'Entrar na Plataforma'}</span>
                     <ArrowRight className="h-4 w-4" />
                   </>
                 )}
               </button>
             </form>
 
-            {/* Painel Informativo para Testes */}
-            <div className="mt-8 pt-6 border-t border-cinema-charcoal text-center">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-cinema-gold bg-cinema-gold/10 border border-cinema-gold/20 rounded-full px-3 py-1">
-                Acesso de Teste Liberado
-              </span>
-              <p className="text-[11px] text-cinema-popcorn/50 mt-3.5 leading-relaxed">
-                Utilize qualquer formato de e-mail e senha de 6 dígitos. Exemplo: <br />
-                <span className="text-cinema-neon font-mono">brenda@cineinfo.com.br</span> com a senha <span className="text-cinema-neon font-mono">123456</span>
-              </p>
+            <div className="text-center text-xs text-cinema-popcorn/60 mt-6">
+              {isRegister ? (
+                <p>
+                  Já possui uma conta?{' '}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsRegister(false);
+                      setErrorMsg('');
+                      setSuccessMsg('');
+                    }}
+                    className="text-cinema-neon hover:underline font-bold focus:outline-none ml-1 transition-colors"
+                  >
+                    Faça login
+                  </button>
+                </p>
+              ) : (
+                <p>
+                  Não tem uma conta?{' '}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsRegister(true);
+                      setErrorMsg('');
+                      setSuccessMsg('');
+                    }}
+                    className="text-cinema-neon hover:underline font-bold focus:outline-none ml-1 transition-colors"
+                  >
+                    Cadastre-se aqui
+                  </button>
+                </p>
+              )}
             </div>
+
+
           </div>
         </div>
       </div>

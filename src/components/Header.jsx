@@ -2,17 +2,14 @@ import { useState } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import { Search, Film, Heart, MessageSquare, Menu, X, User, LogOut, Shield } from 'lucide-react';
 import { useAuth } from '../context/AuthContext.jsx';
-import { useFavorites } from '../context/FavoritesContext.jsx';
 
 function Header() {
   const location = useLocation();
   const isHome = location.pathname === '/';
   const [isOpen, setIsOpen] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const { user, logout } = useAuth();
-  const { favorites } = useFavorites();
-  
-  const favoritesCount = favorites.length;
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
@@ -23,8 +20,8 @@ function Header() {
   };
 
   const navLinks = [
-    { to: '/', label: 'Filmes', icon: Film },
-    { to: '/favoritos', label: 'Favoritos', icon: Heart, badge: favoritesCount },
+    { to: '/filmes', label: 'Filmes', icon: Film },
+    { to: '/favoritos', label: 'Favoritos', icon: Heart },
     { to: '/sugerir-resenha', label: 'Sugerir Resenha', icon: MessageSquare },
   ];
 
@@ -33,14 +30,10 @@ function Header() {
   }
 
   return (
-    <header className={`${
-      isHome 
-        ? 'absolute top-0 left-0 right-0 z-50 w-full border-b border-transparent bg-gradient-to-b from-black/80 via-black/40 to-transparent' 
-        : 'sticky top-0 z-50 w-full border-b border-cinema-charcoal bg-cinema-black/85 backdrop-blur-md'
-    } transition-all duration-300`}>
+    <header className="fixed top-0 left-0 right-0 z-50 w-full border-b border-white/5 bg-cinema-black/20 backdrop-blur-md transition-all duration-300">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-20 items-center justify-between gap-4">
-          
+
           {/* Logo Section */}
           <Link to="/" className="flex items-center gap-2 group shrink-0">
             <span className="text-2xl font-black tracking-wider text-cinema-popcorn transition-colors group-hover:text-cinema-gold">
@@ -49,8 +42,8 @@ function Header() {
           </Link>
 
           {/* Search Bar - Desktop */}
-          <form 
-            onSubmit={handleSearchSubmit} 
+          <form
+            onSubmit={handleSearchSubmit}
             className="hidden md:flex relative max-w-md w-full items-center"
           >
             <input
@@ -61,8 +54,8 @@ function Header() {
               className="w-full rounded-full border border-cinema-gray bg-cinema-charcoal/60 px-5 py-2 pl-12 text-sm text-cinema-popcorn placeholder-cinema-gray/80 outline-none transition-all duration-300 focus:border-cinema-gold focus:bg-cinema-charcoal focus:ring-1 focus:ring-cinema-gold/30"
             />
             <Search className="absolute left-4 h-4 w-4 text-cinema-gray transition-colors peer-focus:text-cinema-gold" />
-            <button 
-              type="submit" 
+            <button
+              type="submit"
               className="absolute right-2.5 rounded-full bg-cinema-gold px-3 py-1 text-xs font-bold text-cinema-black hover:bg-yellow-400 transition-colors duration-200"
             >
               Buscar
@@ -77,16 +70,16 @@ function Header() {
                 <NavLink
                   key={link.to}
                   to={link.to}
-                  className={({ isActive }) =>
-                    `relative flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold tracking-wide transition-all duration-300 hover:bg-cinema-charcoal/50 hover:text-cinema-gold ${
-                      isActive ? 'text-cinema-gold bg-cinema-charcoal/30' : 'text-cinema-popcorn/80'
-                    }`
-                  }
+                  className={({ isActive }) => {
+                    return `relative flex items-center gap-2 rounded-full px-4 py-2 text-sm font-bold tracking-wide transition-all duration-300 hover:bg-white/10 hover:text-white ${
+                      isActive ? 'text-cinema-gold bg-white/10 border border-cinema-gold/30' : 'text-white'
+                    }`;
+                  }}
                 >
                   <Icon className="h-4 w-4 shrink-0" />
                   <span>{link.label}</span>
                   {link.badge !== undefined && link.badge > 0 && (
-                    <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-cinema-red px-1 text-[10px] font-extrabold text-cinema-popcorn shadow-[0_0_8px_rgba(229,9,20,0.6)]">
+                    <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-cinema-red px-1 text-[10px] font-extrabold text-white shadow-[0_0_8px_rgba(229,9,20,0.6)]">
                       {link.badge}
                     </span>
                   )}
@@ -95,30 +88,47 @@ function Header() {
             })}
             {/* User Account - Desktop */}
             {user ? (
-              <div className="flex items-center gap-3 border-l border-cinema-charcoal pl-4 ml-2 animate-fadeIn">
-                <div className="flex items-center gap-2">
+              <div className="relative border-l border-cinema-charcoal pl-4 ml-2">
+                <button 
+                  onClick={() => setUserMenuOpen(!userMenuOpen)}
+                  className="flex items-center gap-2 hover:opacity-85 focus:outline-none select-none py-1.5 px-3 rounded-full hover:bg-white/5 transition-all duration-200"
+                >
                   <div className="h-9 w-9 overflow-hidden rounded-full border border-cinema-gold bg-cinema-charcoal shadow-[0_0_8px_rgba(245,197,24,0.35)]">
                     <img src={user.avatar} alt={user.name} className="h-full w-full object-cover" />
                   </div>
-                  <div className="hidden xl:flex flex-col">
-                    <span className="text-xs font-bold text-cinema-popcorn">{user.name}</span>
-                    <span className="text-[9px] text-cinema-gray">{user.perfil || 'Membro'}</span>
-                  </div>
-                </div>
-                <button 
-                  onClick={logout}
-                  className="flex items-center gap-1 rounded-lg border border-cinema-charcoal bg-cinema-charcoal/20 px-3 py-1.5 text-xs font-bold text-cinema-popcorn hover:border-cinema-red hover:text-cinema-red hover:bg-cinema-red/10 transition-all duration-300"
-                  title="Sair da conta"
-                >
-                  <LogOut className="h-3.5 w-3.5" />
-                  <span className="hidden sm:inline">Sair</span>
+                  <span className="text-xs font-bold text-cinema-popcorn max-w-[100px] truncate">{user.name}</span>
                 </button>
+
+                {userMenuOpen && (
+                  <>
+                    <div 
+                      className="fixed inset-0 z-40" 
+                      onClick={() => setUserMenuOpen(false)}
+                    />
+                    <div className="absolute right-0 mt-2 w-40 origin-top-right rounded-xl border border-cinema-charcoal bg-cinema-black/95 p-2 shadow-xl ring-1 ring-black/5 focus:outline-none z-50 animate-fadeIn">
+                      <div className="px-3 py-1.5 border-b border-cinema-charcoal mb-1">
+                        <p className="text-[10px] uppercase font-bold tracking-wider text-cinema-gray">Função</p>
+                        <p className="text-xs font-semibold text-cinema-popcorn truncate">{user.perfil || 'Membro'}</p>
+                      </div>
+                      <button 
+                        onClick={() => {
+                          logout();
+                          setUserMenuOpen(false);
+                        }}
+                        className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-xs font-bold text-cinema-popcorn hover:bg-cinema-red/10 hover:text-cinema-red transition-all duration-200"
+                      >
+                        <LogOut className="h-4 w-4" />
+                        <span>Sair da Conta</span>
+                      </button>
+                    </div>
+                  </>
+                )}
               </div>
             ) : (
               <div className="flex items-center border-l border-cinema-charcoal pl-4 ml-2">
-                <Link 
+                <Link
                   to="/login"
-                  className="flex items-center gap-1.5 rounded-full bg-cinema-red hover:bg-red-700 text-cinema-popcorn px-5 py-2 text-xs font-bold transition-all duration-300 shadow-[0_4px_12px_rgba(229,9,20,0.35)] hover:scale-105"
+                  className="flex items-center gap-1.5 rounded-full bg-cinema-red hover:bg-red-700 text-cinema-popcorn px-5 py-2 text-xs font-bold transition-all duration-300"
                 >
                   <User className="h-3.5 w-3.5" />
                   <span>Entrar</span>
@@ -143,10 +153,9 @@ function Header() {
       </div>
 
       {/* Mobile Drawer (Expandable menu) */}
-      <div 
-        className={`lg:hidden border-t border-cinema-charcoal bg-cinema-black transition-all duration-300 ease-in-out overflow-hidden ${
-          isOpen ? 'max-h-[500px] opacity-100 py-4' : 'max-h-0 opacity-0 pointer-events-none'
-        }`}
+      <div
+        className={`lg:hidden border-t border-cinema-charcoal bg-cinema-black transition-all duration-300 ease-in-out overflow-hidden ${isOpen ? 'max-h-[500px] opacity-100 py-4' : 'max-h-0 opacity-0 pointer-events-none'
+          }`}
       >
         <div className="px-4 space-y-4">
           {/* Mobile Search Bar */}
@@ -159,8 +168,8 @@ function Header() {
               className="w-full rounded-full border border-cinema-gray bg-cinema-charcoal/60 px-5 py-2.5 pl-12 text-sm text-cinema-popcorn placeholder-cinema-gray outline-none focus:border-cinema-gold focus:bg-cinema-charcoal"
             />
             <Search className="absolute left-4 h-4 w-4 text-cinema-gray" />
-            <button 
-              type="submit" 
+            <button
+              type="submit"
               className="absolute right-2 rounded-full bg-cinema-gold px-3.5 py-1.5 text-xs font-bold text-cinema-black hover:bg-yellow-400"
             >
               Buscar
@@ -182,7 +191,7 @@ function Header() {
                     <p className="text-[10px] text-cinema-gray">{user.email}</p>
                   </div>
                 </div>
-                <button 
+                <button
                   onClick={() => {
                     logout();
                     setIsOpen(false);
@@ -194,10 +203,10 @@ function Header() {
                 </button>
               </div>
             ) : (
-              <Link 
+              <Link
                 to="/login"
                 onClick={() => setIsOpen(false)}
-                className="flex w-full items-center justify-center gap-2 rounded-xl bg-cinema-red py-3 text-sm font-bold text-cinema-popcorn shadow-[0_4px_12px_rgba(229,9,20,0.3)] hover:bg-red-700 transition-colors"
+                className="flex w-full items-center justify-center gap-2 rounded-xl bg-cinema-red py-3 text-sm font-bold text-cinema-popcorn hover:bg-red-700 transition-colors"
               >
                 <User className="h-4 w-4" />
                 <span>Entrar na Conta</span>
@@ -215,10 +224,9 @@ function Header() {
                   to={link.to}
                   onClick={() => setIsOpen(false)}
                   className={({ isActive }) =>
-                    `flex items-center justify-between rounded-lg px-4 py-3 text-base font-medium transition-colors ${
-                      isActive 
-                        ? 'bg-cinema-charcoal/60 text-cinema-gold border-l-4 border-cinema-gold' 
-                        : 'text-cinema-popcorn/80 hover:bg-cinema-charcoal/30 hover:text-cinema-gold'
+                    `flex items-center justify-between rounded-full px-5 py-3 text-base font-medium transition-colors ${isActive
+                      ? 'bg-cinema-charcoal/60 text-cinema-gold border-l-4 border-cinema-gold'
+                      : 'text-cinema-popcorn/80 hover:bg-cinema-charcoal/30 hover:text-cinema-gold'
                     }`
                   }
                 >
