@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import App from './App.jsx';
 import Login from './pages/Login.jsx';
+import Cadastro from './pages/Cadastro.jsx';
 import MovieDetails from './pages/MovieDetails.jsx';
 import Favorites from './pages/Favorites.jsx';
 import Admin from './pages/Admin.jsx';
@@ -17,8 +18,9 @@ function AppRoutes() {
           <Routes>
             <Route path="/" element={<App />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/cadastro" element={<Login />} />
+            <Route path="/cadastro" element={<Cadastro />} />
             <Route path="/filme/:id" element={<MovieDetails />} />
+            <Route path="/serie/:id" element={<MovieDetails />} />
             <Route path="/favoritos" element={<Favorites />} />
             <Route 
               path="/admin" 
