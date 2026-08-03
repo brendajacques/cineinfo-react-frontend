@@ -29,6 +29,7 @@ function App() {
   const [loadingTmdb, setLoadingTmdb] = useState(true);
   const [tmdbError, setTmdbError] = useState(null);
   const [searchTerm, setSearchTerm] = useState(initialQuery);
+  const [searchCategory, setSearchCategory] = useState('movie'); // 'movie' | 'tv' | 'person'
 
   useEffect(() => {
     const urlQuery = searchParams.get('search') || searchParams.get('q') || '';
@@ -76,9 +77,10 @@ function App() {
         }
 
         const query = searchTerm.trim();
+        const category = searchCategory || 'movie';
         const url = query
-          ? `${baseUrl}/search/movie?query=${encodeURIComponent(query)}&language=pt-BR`
-          : `${baseUrl}/trending/movie/week?language=pt-BR`;
+          ? `${baseUrl}/search/${category}?query=${encodeURIComponent(query)}&language=pt-BR`
+          : `${baseUrl}/trending/${category}/week?language=pt-BR`;
 
         const response = await fetch(url, {
           method: 'GET',
@@ -103,7 +105,7 @@ function App() {
     }, 350);
 
     return () => clearTimeout(timer);
-  }, [searchTerm]);
+  }, [searchTerm, searchCategory]);
 
   const handleAddReview = (e) => {
     e.preventDefault();
@@ -199,7 +201,11 @@ function App() {
             <div className="flex items-center gap-3">
               <Sparkles className="h-6 w-6 text-cinema-gold animate-spin-slow" />
               <h3 className="text-2xl font-black tracking-wide text-cinema-popcorn">
-                {searchTerm.trim() ? `Resultados para "${searchTerm}"` : 'Filmes Populares (TMDB)'}
+                {searchTerm.trim()
+                  ? `Resultados para "${searchTerm}"`
+                  : searchCategory === 'tv'
+                  ? 'Séries Populares (TMDB)'
+                  : 'Filmes Populares (TMDB)'}
               </h3>
             </div>
             <span className="text-xs text-cinema-neon hover:underline cursor-pointer flex items-center gap-1 font-bold">
@@ -207,7 +213,12 @@ function App() {
             </span>
           </div>
 
-          <SearchBar value={searchTerm} onChange={handleSearchChange} />
+          <SearchBar 
+            value={searchTerm} 
+            onChange={handleSearchChange} 
+            category={searchCategory}
+            onCategoryChange={setSearchCategory}
+          />
 
           {loadingTmdb ? (
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
