@@ -157,6 +157,14 @@ function Header() {
         </div>
       </div>
 
+      {/* Mobile Drawer Backdrop */}
+      {isOpen && (
+        <div
+          className="fixed inset-0 top-20 bg-black/60 backdrop-blur-xs z-40 lg:hidden"
+          onClick={() => setIsOpen(false)}
+        />
+      )}
+
       {/* Mobile Drawer (Expandable menu) */}
       <div
         className={`lg:hidden border-t border-cinema-charcoal bg-cinema-black transition-all duration-300 ease-in-out overflow-hidden ${isOpen ? 'max-h-[500px] opacity-100 py-4' : 'max-h-0 opacity-0 pointer-events-none'
