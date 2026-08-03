@@ -6,6 +6,7 @@ import MovieCard from './components/MovieCard.jsx';
 import SearchBar from './components/SearchBar.jsx';
 import { useAuth } from './context/AuthContext.jsx';
 import { useFavorites } from './context/FavoritesContext.jsx';
+import { applyMovieOverrides, applyMoviesListOverrides } from './utils/movieStore.js';
 
 function App() {
   const navigate = useNavigate();
@@ -67,7 +68,7 @@ function App() {
             });
             if (featuredResponse.ok) {
               const featuredData = await featuredResponse.json();
-              setFeaturedMovie(featuredData);
+              setFeaturedMovie(applyMovieOverrides(featuredData));
             }
           } catch (err) {
             console.error('Erro ao buscar filme em destaque:', err);
@@ -92,7 +93,7 @@ function App() {
         }
 
         const data = await response.json();
-        setTmdbMovies(data.results || []);
+        setTmdbMovies(applyMoviesListOverrides(data.results || []));
       } catch (err) {
         console.error('Erro ao buscar do TMDB:', err);
         setTmdbError(err.message || 'Ocorreu um erro desconhecido.');

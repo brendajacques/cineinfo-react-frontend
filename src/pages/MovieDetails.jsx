@@ -3,7 +3,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 import { useFavorites } from '../context/FavoritesContext.jsx';
 import Layout from '../components/Layout.jsx';
-import { Star, Heart, ArrowLeft, Clock, Calendar, Film, Sparkles, DollarSign, Globe, Clapperboard } from 'lucide-react';
+import { Star, Heart, ArrowLeft, Clock, Calendar, Film, Sparkles, DollarSign, Globe, Clapperboard, MessageSquare } from 'lucide-react';
+import { applyMovieOverrides } from '../utils/movieStore.js';
 
 
 function MovieDetails() {
@@ -39,7 +40,7 @@ function MovieDetails() {
         }
 
         const data = await response.json();
-        setMovie(data);
+        setMovie(applyMovieOverrides(data));
       } catch (err) {
         console.error('Erro ao buscar detalhes do filme:', err);
         setError(err.message || 'Ocorreu um erro ao obter os detalhes do filme.');
@@ -235,6 +236,18 @@ function MovieDetails() {
                 {movie.overview || 'Nenhuma sinopse disponível em português para este filme.'}
               </p>
             </section>
+
+            {movie.adminReview && (
+              <section className="rounded-2xl border border-cinema-gold/30 bg-cinema-gold/5 backdrop-blur-xs p-6 sm:p-8 space-y-3">
+                <div className="flex items-center gap-2.5 pb-3 border-b border-cinema-gold/20">
+                  <MessageSquare className="h-5 w-5 text-cinema-gold" />
+                  <h2 className="text-xl font-bold text-cinema-gold">Resenha Editorial (Administração)</h2>
+                </div>
+                <p className="text-sm sm:text-base leading-relaxed text-cinema-popcorn/90 italic font-light">
+                  "{movie.adminReview}"
+                </p>
+              </section>
+            )}
 
             <section className="rounded-2xl border border-cinema-charcoal/60 bg-cinema-charcoal/15 backdrop-blur-xs p-6 sm:p-8 space-y-6">
               <div className="flex items-center gap-2.5 pb-3 border-b border-cinema-charcoal/60">

@@ -4,6 +4,7 @@ import { useFavorites } from '../context/FavoritesContext.jsx';
 import Layout from '../components/Layout.jsx';
 import MovieCard from '../components/MovieCard.jsx';
 import { Heart, Film, ArrowLeft } from 'lucide-react';
+import { applyMovieOverrides } from '../utils/movieStore.js';
 
 function Favorites() {
   const navigate = useNavigate();
@@ -45,7 +46,8 @@ function Favorites() {
             return null;
           }
 
-          return response.json();
+          const rawMovie = await response.json();
+          return applyMovieOverrides(rawMovie);
         });
 
         const results = await Promise.all(moviePromises);
