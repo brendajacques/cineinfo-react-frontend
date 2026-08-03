@@ -16,6 +16,7 @@ function AppRoutes() {
           <Routes>
             <Route path="/" element={<App />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/cadastro" element={<Login />} />
             <Route path="/filme/:id" element={<MovieDetails />} />
             <Route path="/favoritos" element={<Favorites />} />
             <Route 

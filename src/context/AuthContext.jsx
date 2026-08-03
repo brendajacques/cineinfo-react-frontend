@@ -44,12 +44,32 @@ export function AuthProvider({ children }) {
     return true;
   };
 
+  /**
+   * @param {string} name - Nome completo do usuário
+   * @param {string} email - E-mail do usuário
+   * @param {string} password - Senha do usuário
+   * @returns {boolean} - Indica sucesso no cadastro
+   */
+  const register = (name, email, password) => {
+    if (!name || !email || !password) return false;
+
+    const mockUser = {
+      name: name,
+      email: email,
+      perfil: email.toLowerCase().includes('admin') ? 'Administrador' : 'Usuário',
+      avatar: `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(name)}`
+    };
+
+    setUser(mockUser);
+    return true;
+  };
+
   const logout = () => {
     setUser(null);
   };
 
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated: !!user, login, logout }}>
+    <AuthContext.Provider value={{ user, isAuthenticated: !!user, login, register, logout }}>
       {children}
     </AuthContext.Provider>
   );

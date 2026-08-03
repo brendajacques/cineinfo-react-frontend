@@ -1,13 +1,15 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 import Layout from '../components/Layout.jsx';
 import { Mail, Lock, Eye, EyeOff, Film, CheckCircle2, AlertCircle, ArrowRight, User } from 'lucide-react';
+
 function Login() {
   const { login, register, user } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
-  const [isRegister, setIsRegister] = useState(false);
+  const [isRegister, setIsRegister] = useState(location.pathname === '/cadastro');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -18,6 +20,12 @@ function Login() {
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
+
+  useEffect(() => {
+    setIsRegister(location.pathname === '/cadastro');
+    setErrorMsg('');
+    setSuccessMsg('');
+  }, [location.pathname]);
 
   if (user) {
     setTimeout(() => navigate('/'), 0);
@@ -254,11 +262,7 @@ function Login() {
                   Já possui uma conta?{' '}
                   <button
                     type="button"
-                    onClick={() => {
-                      setIsRegister(false);
-                      setErrorMsg('');
-                      setSuccessMsg('');
-                    }}
+                    onClick={() => navigate('/login')}
                     className="text-cinema-neon hover:underline font-bold focus:outline-none ml-1 transition-colors"
                   >
                     Faça login
@@ -269,11 +273,7 @@ function Login() {
                   Não tem uma conta?{' '}
                   <button
                     type="button"
-                    onClick={() => {
-                      setIsRegister(true);
-                      setErrorMsg('');
-                      setSuccessMsg('');
-                    }}
+                    onClick={() => navigate('/cadastro')}
                     className="text-cinema-neon hover:underline font-bold focus:outline-none ml-1 transition-colors"
                   >
                     Cadastre-se aqui
