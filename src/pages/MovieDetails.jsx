@@ -1,24 +1,24 @@
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext.jsx';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useFavorites } from '../context/FavoritesContext.jsx';
 import Layout from '../components/Layout.jsx';
-import { Star, Heart, ArrowLeft, Clock, Calendar, Film, Sparkles, DollarSign, Globe, Clapperboard, MessageSquare } from 'lucide-react';
+import { Star, Heart, ArrowLeft, Clock, Calendar, Film, Sparkles, DollarSign, Globe, Clapperboard, MessageSquare, Tv } from 'lucide-react';
 import { applyMovieOverrides } from '../utils/movieStore.js';
-
 
 function MovieDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const { favorites, toggleFavorite } = useFavorites();
   const [movie, setMovie] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchMovieDetails = async () => {
+    const fetchDetails = async () => {
       try {
         setLoading(true);
+        setError(null);
         const baseUrl = import.meta.env.VITE_TMDB_BASE_URL;
         const token = import.meta.env.VITE_TMDB_ACCESS_TOKEN;
 
@@ -26,38 +26,71 @@ function MovieDetails() {
           throw new Error('As variáveis de ambiente do TMDB não foram configuradas corretamente.');
         }
 
-        const url = `${baseUrl}/movie/${id}?language=pt-BR&append_to_response=credits`;
-        const response = await fetch(url, {
-          method: 'GET',
-          headers: {
-            accept: 'application/json',
-            Authorization: `Bearer ${token}`
+        const headers = {
+          accept: 'application/json',
+          Authorization: `Bearer ${token}`
+        };
+
+        const isSeriePath = location.pathname.startsWith('/serie');
+        let primaryUrl = isSeriePath
+          ? `${baseUrl}/tv/${id}?language=pt-BR&append_to_response=credits,aggregate_credits`
+          : `${baseUrl}/movie/${id}?language=pt-BR&append_to_response=credits`;
+
+        let response = await fetch(primaryUrl, { method: 'GET', headers });
+
+        // Se falhar no endpoint primário, faz tentativa no endpoint alternativo (Filme <-> Série)
+        if (!response.ok) {
+          const fallbackUrl = isSeriePath
+            ? `${baseUrl}/movie/${id}?language=pt-BR&append_to_response=credits`
+            : `${baseUrl}/tv/${id}?language=pt-BR&append_to_response=credits,aggregate_credits`;
+
+          const fallbackResponse = await fetch(fallbackUrl, { method: 'GET', headers });
+          if (fallbackResponse.ok) {
+            response = fallbackResponse;
           }
-        });
+        }
 
         if (!response.ok) {
-          throw new Error(`Filme não encontrado (status: ${response.status})`);
+          throw new Error(`Título não encontrado (status: ${response.status})`);
         }
 
         const data = await response.json();
-        setMovie(applyMovieOverrides(data));
+
+        // Normalização dos campos para unificar Filmes e Séries em uma única estrutura
+        const isTv = !data.title && (!!data.name || !!data.first_air_date);
+        const normalizedData = {
+          ...data,
+          id: Number(id),
+          title: data.title || data.name || 'Sem Título',
+          original_title: data.original_title || data.original_name || data.name || '',
+          release_date: data.release_date || data.first_air_date || '',
+          runtime: data.runtime || (data.episode_run_time && data.episode_run_time[0]) || null,
+          number_of_seasons: data.number_of_seasons || null,
+          number_of_episodes: data.number_of_episodes || null,
+          isTv: isTv,
+          credits: {
+            cast: data.credits?.cast || data.aggregate_credits?.cast || []
+          }
+        };
+
+        setMovie(applyMovieOverrides(normalizedData));
       } catch (err) {
-        console.error('Erro ao buscar detalhes do filme:', err);
-        setError(err.message || 'Ocorreu um erro ao obter os detalhes do filme.');
+        console.error('Erro ao buscar detalhes do título:', err);
+        setError(err.message || 'Ocorreu um erro ao obter os detalhes do título.');
       } finally {
         setLoading(false);
       }
     };
 
-    fetchMovieDetails();
-  }, [id]);
+    fetchDetails();
+  }, [id, location.pathname]);
 
   if (loading) {
     return (
       <Layout>
         <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4">
           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-cinema-gold"></div>
-          <p className="text-cinema-popcorn/60 text-sm animate-pulse">Carregando detalhes do filme...</p>
+          <p className="text-cinema-popcorn/60 text-sm animate-pulse">Carregando detalhes...</p>
         </div>
       </Layout>
     );
@@ -71,7 +104,7 @@ function MovieDetails() {
             <Film className="h-8 w-8" />
           </div>
           <h3 className="text-2xl font-bold text-cinema-popcorn">Ops! Algo deu errado.</h3>
-          <p className="text-sm text-cinema-popcorn/60">{error || 'Filme não encontrado.'}</p>
+          <p className="text-sm text-cinema-popcorn/60">{error || 'Título não encontrado.'}</p>
           <button
             onClick={() => navigate('/')}
             className="inline-flex items-center gap-2 rounded-full bg-cinema-charcoal/50 hover:bg-cinema-charcoal px-6 py-2.5 text-sm font-bold text-cinema-gold border border-cinema-gold/30 hover:border-cinema-gold transition-all duration-300"
@@ -147,11 +180,15 @@ function MovieDetails() {
 
             <div className="md:col-span-8 lg:col-span-9 space-y-6 text-left">
               <div className="space-y-3">
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="rounded-full bg-cinema-red/15 border border-cinema-red/30 px-3 py-0.5 text-[10px] font-extrabold uppercase tracking-wider text-cinema-red flex items-center gap-1">
+                    {movie.isTv ? <Tv className="h-3 w-3" /> : <Film className="h-3 w-3" />}
+                    <span>{movie.isTv ? 'Série' : 'Filme'}</span>
+                  </span>
                   {movie.genres?.map(genre => (
                     <span
                       key={genre.id}
-                      className="rounded-full bg-cinema-neon/10 border border-cinema-neon/30 px-3.5 py-1 text-[10px] sm:text-xs font-bold uppercase tracking-wider text-cinema-neon hover:bg-cinema-neon/20 transition-colors duration-300"
+                      className="rounded-full bg-cinema-neon/10 border border-cinema-neon/30 px-3 py-0.5 text-[10px] sm:text-xs font-bold uppercase tracking-wider text-cinema-neon hover:bg-cinema-neon/20 transition-colors duration-300"
                     >
                       {genre.name}
                     </span>
@@ -181,10 +218,12 @@ function MovieDetails() {
 
                 <div className="space-y-1">
                   <span className="text-[10px] uppercase font-bold tracking-wider text-cinema-popcorn/50 flex items-center gap-1.5">
-                    <Clock className="h-3.5 w-3.5 text-cinema-neon" /> Duração
+                    <Clock className="h-3.5 w-3.5 text-cinema-neon" /> {movie.isTv ? 'Temporadas' : 'Duração'}
                   </span>
                   <p className="text-base sm:text-lg font-extrabold text-cinema-popcorn">
-                    {movie.runtime ? `${movie.runtime} min` : 'N/A'}
+                    {movie.isTv
+                      ? `${movie.number_of_seasons || 1} Temp.`
+                      : movie.runtime ? `${movie.runtime} min` : 'N/A'}
                   </p>
                 </div>
 
@@ -211,11 +250,11 @@ function MovieDetails() {
                 <button
                   onClick={() => toggleFavorite(movie.id)}
                   className={`flex items-center gap-2 rounded-full border px-6 py-3 text-sm font-bold cursor-pointer transition-all duration-300 transform active:scale-95 ${isFav
-                      ? 'border-cinema-red bg-cinema-red/15 text-cinema-red shadow-[0_0_15px_rgba(229,9,20,0.35)] hover:bg-cinema-red/25'
+                      ? 'border-cinema-gold bg-cinema-gold/15 text-cinema-gold shadow-[0_0_15px_rgba(245,197,24,0.35)] hover:bg-cinema-gold/25'
                       : 'border-cinema-gray bg-cinema-charcoal/40 text-cinema-popcorn hover:border-cinema-gold hover:text-cinema-gold hover:bg-cinema-charcoal/70'
                     }`}
                 >
-                  <Heart className={`h-4.5 w-4.5 transition-colors duration-300 ${isFav ? 'fill-cinema-red text-cinema-red' : ''}`} />
+                  <Star className={`h-4.5 w-4.5 transition-colors duration-300 ${isFav ? 'fill-cinema-gold text-cinema-gold' : ''}`} />
                   <span>{isFav ? 'Favoritado' : 'Adicionar aos Favoritos'}</span>
                 </button>
               </div>
@@ -233,7 +272,7 @@ function MovieDetails() {
                 <h2 className="text-xl font-bold text-cinema-popcorn">Sinopse</h2>
               </div>
               <p className="text-sm sm:text-base leading-relaxed text-cinema-popcorn/85 tracking-wide">
-                {movie.overview || 'Nenhuma sinopse disponível em português para este filme.'}
+                {movie.overview || 'Nenhuma sinopse disponível em português.'}
               </p>
             </section>
 
@@ -276,7 +315,7 @@ function MovieDetails() {
                         )}
                       </div>
                       <span className="text-xs font-bold text-cinema-popcorn line-clamp-1 group-hover:text-cinema-gold transition-colors duration-200">{actor.name}</span>
-                      <span className="text-[10px] text-cinema-popcorn/50 line-clamp-1 mt-0.5">{actor.character}</span>
+                      <span className="text-[10px] text-cinema-popcorn/50 line-clamp-1 mt-0.5">{actor.character || 'Personagem'}</span>
                     </div>
                   ))}
                 </div>
@@ -300,19 +339,38 @@ function MovieDetails() {
                   <span className="text-sm font-semibold text-cinema-popcorn">{movie.original_title || movie.title}</span>
                 </div>
 
-                <div className="pt-3 pb-3">
-                  <span className="text-[10px] uppercase font-bold tracking-wider text-cinema-popcorn/40 block mb-1 items-center gap-1">
-                    <DollarSign className="h-3 w-3 text-cinema-gold" /> Orçamento
-                  </span>
-                  <span className="text-sm font-semibold text-cinema-popcorn">{formatCurrency(movie.budget)}</span>
-                </div>
+                {movie.isTv ? (
+                  <>
+                    <div className="pt-3 pb-3">
+                      <span className="text-[10px] uppercase font-bold tracking-wider text-cinema-popcorn/40 block mb-1">
+                        Temporadas
+                      </span>
+                      <span className="text-sm font-semibold text-cinema-popcorn">{movie.number_of_seasons || 'N/A'}</span>
+                    </div>
+                    <div className="pt-3 pb-3">
+                      <span className="text-[10px] uppercase font-bold tracking-wider text-cinema-popcorn/40 block mb-1">
+                        Episódios
+                      </span>
+                      <span className="text-sm font-semibold text-cinema-popcorn">{movie.number_of_episodes || 'N/A'}</span>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="pt-3 pb-3">
+                      <span className="text-[10px] uppercase font-bold tracking-wider text-cinema-popcorn/40 block mb-1 items-center gap-1">
+                        <DollarSign className="h-3 w-3 text-cinema-gold" /> Orçamento
+                      </span>
+                      <span className="text-sm font-semibold text-cinema-popcorn">{formatCurrency(movie.budget)}</span>
+                    </div>
 
-                <div className="pt-3 pb-3">
-                  <span className="text-[10px] uppercase font-bold tracking-wider text-cinema-popcorn/40 block mb-1 items-center gap-1">
-                    <DollarSign className="h-3 w-3 text-cinema-neon" /> Receita
-                  </span>
-                  <span className="text-sm font-semibold text-cinema-popcorn">{formatCurrency(movie.revenue)}</span>
-                </div>
+                    <div className="pt-3 pb-3">
+                      <span className="text-[10px] uppercase font-bold tracking-wider text-cinema-popcorn/40 block mb-1 items-center gap-1">
+                        <DollarSign className="h-3 w-3 text-cinema-neon" /> Receita
+                      </span>
+                      <span className="text-sm font-semibold text-cinema-popcorn">{formatCurrency(movie.revenue)}</span>
+                    </div>
+                  </>
+                )}
 
                 {movie.production_countries && movie.production_countries.length > 0 && (
                   <div className="pt-3">
