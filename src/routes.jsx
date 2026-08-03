@@ -4,6 +4,7 @@ import Login from './pages/Login.jsx';
 import MovieDetails from './pages/MovieDetails.jsx';
 import Favorites from './pages/Favorites.jsx';
 import Admin from './pages/Admin.jsx';
+import AdminEdit from './pages/AdminEdit.jsx';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
 import { AuthProvider } from './context/AuthContext.jsx';
 import { FavoritesProvider } from './context/FavoritesContext.jsx';
@@ -24,6 +25,14 @@ function AppRoutes() {
               element={
                 <ProtectedRoute>
                   <Admin />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/admin/editar/:id" 
+              element={
+                <ProtectedRoute>
+                  <AdminEdit />
                 </ProtectedRoute>
               } 
             />
