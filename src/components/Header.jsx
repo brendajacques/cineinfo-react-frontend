@@ -30,7 +30,7 @@ function Header() {
     { to: '/sugerir-resenha', label: 'Sugerir Resenha', icon: MessageSquare },
   ];
 
-  if (user?.perfil === 'Administrador') {
+  if (user?.isAdmin || user?.perfil === 'Administrador') {
     navLinks.push({ to: '/admin', label: 'Admin', icon: Shield });
   }
 

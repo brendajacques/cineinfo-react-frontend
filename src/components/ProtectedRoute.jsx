@@ -9,7 +9,9 @@ import { useAuth } from '../context/AuthContext.jsx';
 export default function ProtectedRoute({ children }) {
   const { user } = useAuth();
 
-  if (!user || user.perfil !== 'Administrador') {
+  const isUserAdmin = user && (user.isAdmin || user.perfil === 'Administrador');
+
+  if (!isUserAdmin) {
     return <Navigate to="/" replace />;
   }
 

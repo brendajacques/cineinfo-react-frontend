@@ -33,10 +33,12 @@ export function AuthProvider({ children }) {
     const namePart = email.split('@')[0];
     const username = namePart.charAt(0).toUpperCase() + namePart.slice(1);
 
+    const isAdmin = email.toLowerCase().includes('admin');
     const mockUser = {
       name: username,
       email: email,
-      perfil: email.toLowerCase().includes('admin') ? 'Administrador' : 'Usuário',
+      perfil: isAdmin ? 'Administrador' : 'Usuário',
+      isAdmin: isAdmin,
       avatar: `https://api.dicebear.com/7.x/bottts/svg?seed=${namePart}`
     };
 
@@ -53,10 +55,12 @@ export function AuthProvider({ children }) {
   const register = (name, email, password) => {
     if (!name || !email || !password) return false;
 
+    const isAdmin = email.toLowerCase().includes('admin');
     const mockUser = {
       name: name,
       email: email,
-      perfil: email.toLowerCase().includes('admin') ? 'Administrador' : 'Usuário',
+      perfil: isAdmin ? 'Administrador' : 'Usuário',
+      isAdmin: isAdmin,
       avatar: `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(name)}`
     };
 
