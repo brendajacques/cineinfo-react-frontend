@@ -1,10 +1,11 @@
 import { useState } from 'react';
-import { Link, NavLink, useLocation } from 'react-router-dom';
+import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { Search, Film, Heart, MessageSquare, Menu, X, User, LogOut, Shield } from 'lucide-react';
 import { useAuth } from '../context/AuthContext.jsx';
 
 function Header() {
   const location = useLocation();
+  const navigate = useNavigate();
   const isHome = location.pathname === '/';
   const [isOpen, setIsOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
@@ -13,9 +14,13 @@ function Header() {
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
-    if (searchQuery.trim()) {
-      alert(`Buscando por: "${searchQuery}" em Filmes e Séries...`);
-      // Implementar redirecionamento ou lógica de busca real futuramente
+    const query = searchQuery.trim();
+    if (query) {
+      navigate(`/?search=${encodeURIComponent(query)}`);
+      setIsOpen(false);
+    } else {
+      navigate('/');
+      setIsOpen(false);
     }
   };
 
