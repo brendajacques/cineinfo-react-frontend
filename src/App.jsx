@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import Layout from './components/Layout.jsx';
 import { Star, Heart, Flame, Sparkles, MessageSquare, Play, CheckCircle2, Search } from 'lucide-react';
 import MovieCard from './components/MovieCard.jsx';
@@ -9,6 +9,9 @@ import { useFavorites } from './context/FavoritesContext.jsx';
 
 function App() {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const initialQuery = searchParams.get('search') || searchParams.get('q') || '';
+
   const [reviewTitle, setReviewTitle] = useState('');
   const [reviewType, setReviewType] = useState('filme');
   const [reviewContent, setReviewContent] = useState('');
@@ -24,21 +27,27 @@ function App() {
   const [featuredMovie, setFeaturedMovie] = useState(null);
   const [loadingTmdb, setLoadingTmdb] = useState(true);
   const [tmdbError, setTmdbError] = useState(null);
-  const [searchTerm, setSearchTerm] = useState('');
-
-  const filteredMovies = tmdbMovies.filter((movie) => {
-    const searchLower = searchTerm.toLowerCase();
-    const titleMatch = movie.title?.toLowerCase().includes(searchLower);
-    const originalTitleMatch = movie.original_title?.toLowerCase().includes(searchLower);
-    const overviewMatch = movie.overview?.toLowerCase().includes(searchLower);
-    return titleMatch || originalTitleMatch || overviewMatch;
-  });
-
+  const [searchTerm, setSearchTerm] = useState(initialQuery);
 
   useEffect(() => {
-    const fetchTmdbMovies = async () => {
+    const urlQuery = searchParams.get('search') || searchParams.get('q') || '';
+    setSearchTerm(urlQuery);
+  }, [searchParams]);
+
+  const handleSearchChange = (newTerm) => {
+    setSearchTerm(newTerm);
+    if (newTerm.trim()) {
+      setSearchParams({ search: newTerm });
+    } else {
+      setSearchParams({});
+    }
+  };
+
+  useEffect(() => {
+    const timer = setTimeout(async () => {
       try {
         setLoadingTmdb(true);
+        setTmdbError(null);
         const baseUrl = import.meta.env.VITE_TMDB_BASE_URL;
         const token = import.meta.env.VITE_TMDB_ACCESS_TOKEN;
 
@@ -46,24 +55,30 @@ function App() {
           throw new Error('As variáveis de ambiente do TMDB não foram configuradas corretamente.');
         }
 
-        try {
-          const featuredUrl = `${baseUrl}/movie/439079?language=pt-BR`;
-          const featuredResponse = await fetch(featuredUrl, {
-            method: 'GET',
-            headers: {
-              accept: 'application/json',
-              Authorization: `Bearer ${token}`
+        if (!featuredMovie) {
+          try {
+            const featuredUrl = `${baseUrl}/movie/439079?language=pt-BR`;
+            const featuredResponse = await fetch(featuredUrl, {
+              method: 'GET',
+              headers: {
+                accept: 'application/json',
+                Authorization: `Bearer ${token}`
+              }
+            });
+            if (featuredResponse.ok) {
+              const featuredData = await featuredResponse.json();
+              setFeaturedMovie(featuredData);
             }
-          });
-          if (featuredResponse.ok) {
-            const featuredData = await featuredResponse.json();
-            setFeaturedMovie(featuredData);
+          } catch (err) {
+            console.error('Erro ao buscar filme em destaque:', err);
           }
-        } catch (err) {
-          console.error('Erro ao buscar filme em destaque:', err);
         }
 
-        const url = `${baseUrl}/trending/movie/week?language=pt-BR`;
+        const query = searchTerm.trim();
+        const url = query
+          ? `${baseUrl}/search/movie?query=${encodeURIComponent(query)}&language=pt-BR`
+          : `${baseUrl}/trending/movie/week?language=pt-BR`;
+
         const response = await fetch(url, {
           method: 'GET',
           headers: {
@@ -84,10 +99,10 @@ function App() {
       } finally {
         setLoadingTmdb(false);
       }
-    };
+    }, 350);
 
-    fetchTmdbMovies();
-  }, []);
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
 
   const handleAddReview = (e) => {
     e.preventDefault();
@@ -183,7 +198,7 @@ function App() {
             <div className="flex items-center gap-3">
               <Sparkles className="h-6 w-6 text-cinema-gold animate-spin-slow" />
               <h3 className="text-2xl font-black tracking-wide text-cinema-popcorn">
-                Filmes Populares (TMDB)
+                {searchTerm.trim() ? `Resultados para "${searchTerm}"` : 'Filmes Populares (TMDB)'}
               </h3>
             </div>
             <span className="text-xs text-cinema-neon hover:underline cursor-pointer flex items-center gap-1 font-bold">
@@ -191,7 +206,7 @@ function App() {
             </span>
           </div>
 
-          <SearchBar value={searchTerm} onChange={setSearchTerm} />
+          <SearchBar value={searchTerm} onChange={handleSearchChange} />
 
           {loadingTmdb ? (
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
@@ -220,7 +235,7 @@ function App() {
               <p className="text-cinema-red font-bold">Falha ao obter filmes da API</p>
               <p className="text-xs text-cinema-popcorn/60 mt-2">{tmdbError}</p>
             </div>
-          ) : filteredMovies.length === 0 ? (
+          ) : tmdbMovies.length === 0 ? (
             <div className="rounded-2xl border border-cinema-charcoal bg-cinema-charcoal/10 p-12 text-center max-w-lg mx-auto shadow-lg">
               <Search className="h-12 w-12 text-cinema-gray mx-auto mb-4 animate-pulse" />
               <h4 className="text-xl font-bold text-cinema-popcorn">Nenhum filme encontrado</h4>
@@ -229,7 +244,7 @@ function App() {
                 Tente digitar um nome diferente.
               </p>
               <button
-                onClick={() => setSearchTerm('')}
+                onClick={() => handleSearchChange('')}
                 className="mt-6 inline-flex items-center gap-2 rounded-full bg-cinema-charcoal/50 hover:bg-cinema-charcoal px-5 py-2 text-xs font-bold text-cinema-gold border border-cinema-gold/30 hover:border-cinema-gold transition-all duration-300"
               >
                 Limpar Busca
@@ -237,7 +252,7 @@ function App() {
             </div>
           ) : (
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-              {filteredMovies.slice(0, 8).map((movie) => {
+              {tmdbMovies.map((movie) => {
                 const isFav = favorites.includes(movie.id);
                 return (
                   <MovieCard
