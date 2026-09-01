@@ -16,10 +16,10 @@ function Header() {
     e.preventDefault();
     const query = searchQuery.trim();
     if (query) {
-      navigate(`/?search=${encodeURIComponent(query)}`);
+      navigate(`/filmes?search=${encodeURIComponent(query)}`);
       setIsOpen(false);
     } else {
-      navigate('/');
+      navigate('/filmes');
       setIsOpen(false);
     }
   };
