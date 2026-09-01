@@ -1,50 +1,20 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import Layout from './components/Layout.jsx';
-import { Star, Heart, Flame, Sparkles, MessageSquare, Play, CheckCircle2, Search } from 'lucide-react';
+import { Star, Heart, Flame, Sparkles, Play } from 'lucide-react';
 import MovieCard from './components/MovieCard.jsx';
-import SearchBar from './components/SearchBar.jsx';
-import { useAuth } from './context/AuthContext.jsx';
 import { useFavorites } from './context/FavoritesContext.jsx';
 import { applyMovieOverrides, applyMoviesListOverrides } from './utils/movieStore.js';
 import { fetchTmdb } from './services/tmdb.js';
 
 function App() {
   const navigate = useNavigate();
-  const [searchParams, setSearchParams] = useSearchParams();
-  const initialQuery = searchParams.get('search') || searchParams.get('q') || '';
-
-  const [reviewTitle, setReviewTitle] = useState('');
-  const [reviewType, setReviewType] = useState('filme');
-  const [reviewContent, setReviewContent] = useState('');
-  const [reviewsList, setReviewsList] = useState([
-    { id: 1, title: 'Duna: Parte 2', type: 'filme', content: 'Uma obra-prima visual com cinematografia e design de som inacreditáveis.', rating: 5, author: 'PipocaGourmet' },
-    { id: 2, title: 'Stranger Things', type: 'série', content: 'A temporada final promete resgatar todo o clima nostálgico dos anos 80.', rating: 4, author: 'GeekMaster' }
-  ]);
-  const [successMsg, setSuccessMsg] = useState(false);
-
   const { favorites, toggleFavorite } = useFavorites();
 
   const [tmdbMovies, setTmdbMovies] = useState([]);
   const [featuredMovie, setFeaturedMovie] = useState(null);
   const [loadingTmdb, setLoadingTmdb] = useState(true);
   const [tmdbError, setTmdbError] = useState(null);
-  const [searchTerm, setSearchTerm] = useState(initialQuery);
-  const [searchCategory, setSearchCategory] = useState('movie'); // 'movie' | 'tv' | 'person'
-
-  useEffect(() => {
-    const urlQuery = searchParams.get('search') || searchParams.get('q') || '';
-    setSearchTerm(urlQuery);
-  }, [searchParams]);
-
-  const handleSearchChange = (newTerm) => {
-    setSearchTerm(newTerm);
-    if (newTerm.trim()) {
-      setSearchParams({ search: newTerm });
-    } else {
-      setSearchParams({});
-    }
-  };
 
   useEffect(() => {
     const timer = setTimeout(async () => {
@@ -61,11 +31,7 @@ function App() {
           }
         }
 
-        const query = searchTerm.trim();
-        const category = searchCategory || 'movie';
-        const endpoint = query
-          ? `/search/${category}?query=${encodeURIComponent(query)}&language=pt-BR`
-          : `/trending/${category}/week?language=pt-BR`;
+        const endpoint = `/trending/all/week?language=pt-BR`;
 
         const data = await fetchTmdb(endpoint);
         setTmdbMovies(applyMoviesListOverrides(data.results || []));
@@ -78,27 +44,7 @@ function App() {
     }, 350);
 
     return () => clearTimeout(timer);
-  }, [searchTerm, searchCategory]);
-
-  const handleAddReview = (e) => {
-    e.preventDefault();
-    if (!reviewTitle.trim() || !reviewContent.trim()) return;
-
-    const newReview = {
-      id: Date.now(),
-      title: reviewTitle,
-      type: reviewType,
-      content: reviewContent,
-      rating: 5,
-      author: 'Você'
-    };
-
-    setReviewsList([newReview, ...reviewsList]);
-    setReviewTitle('');
-    setReviewContent('');
-    setSuccessMsg(true);
-    setTimeout(() => setSuccessMsg(false), 4000);
-  };
+  }, []);
 
   return (
     <Layout fullWidth={true}>
@@ -174,28 +120,20 @@ function App() {
             <div className="flex items-center gap-3">
               <Sparkles className="h-6 w-6 text-cinema-gold animate-spin-slow" />
               <h3 className="text-2xl font-black tracking-wide text-cinema-popcorn">
-                {searchTerm.trim()
-                  ? `Resultados para "${searchTerm}"`
-                  : searchCategory === 'tv'
-                  ? 'Séries Populares (TMDB)'
-                  : 'Filmes Populares (TMDB)'}
+                Destaques da Semana
               </h3>
             </div>
-            <span className="text-xs text-cinema-neon hover:underline cursor-pointer flex items-center gap-1 font-bold">
-              Atualizado em Tempo Real <Play className="h-2 w-2 fill-cinema-neon" />
-            </span>
+            <button
+              onClick={() => navigate('/filmes')}
+              className="text-xs font-bold text-cinema-gold hover:text-yellow-400 transition-colors uppercase tracking-wider flex items-center gap-1 border border-cinema-gold/30 hover:border-cinema-gold px-4 py-2 rounded-full"
+            >
+              Ver Tudo <Play className="h-3 w-3" />
+            </button>
           </div>
-
-          <SearchBar 
-            value={searchTerm} 
-            onChange={handleSearchChange} 
-            category={searchCategory}
-            onCategoryChange={setSearchCategory}
-          />
 
           {loadingTmdb ? (
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-              {[...Array(8)].map((_, index) => (
+              {[...Array(4)].map((_, index) => (
                 <div
                   key={index}
                   className="animate-pulse flex flex-col rounded-2xl border border-cinema-charcoal bg-cinema-charcoal/20 h-[380px] overflow-hidden"
@@ -220,24 +158,9 @@ function App() {
               <p className="text-cinema-red font-bold">Falha ao obter filmes da API</p>
               <p className="text-xs text-cinema-popcorn/60 mt-2">{tmdbError}</p>
             </div>
-          ) : tmdbMovies.length === 0 ? (
-            <div className="rounded-2xl border border-cinema-charcoal bg-cinema-charcoal/10 p-12 text-center max-w-lg mx-auto shadow-lg">
-              <Search className="h-12 w-12 text-cinema-gray mx-auto mb-4 animate-pulse" />
-              <h4 className="text-xl font-bold text-cinema-popcorn">Nenhum filme encontrado</h4>
-              <p className="text-sm text-cinema-popcorn/60 mt-2">
-                Não encontramos resultados para "<span className="text-cinema-gold font-semibold">{searchTerm}</span>".
-                Tente digitar um nome diferente.
-              </p>
-              <button
-                onClick={() => handleSearchChange('')}
-                className="mt-6 inline-flex items-center gap-2 rounded-full bg-cinema-charcoal/50 hover:bg-cinema-charcoal px-5 py-2 text-xs font-bold text-cinema-gold border border-cinema-gold/30 hover:border-cinema-gold transition-all duration-300"
-              >
-                Limpar Busca
-              </button>
-            </div>
           ) : (
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-              {tmdbMovies.map((movie) => {
+              {tmdbMovies.slice(0, 4).map((movie) => {
                 const isFav = favorites.includes(movie.id);
                 return (
                   <MovieCard
@@ -251,110 +174,6 @@ function App() {
               })}
             </div>
           )}
-        </section>
-
-        <section className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mb-8">
-
-          <div className="lg:col-span-7 rounded-2xl border border-cinema-charcoal bg-cinema-charcoal/20 p-6 md:p-8 space-y-6">
-            <div className="flex items-center gap-3">
-              <MessageSquare className="h-6 w-6 text-cinema-red" />
-              <div>
-                <h3 className="text-2xl font-black text-cinema-popcorn">Painel de Sugestões</h3>
-                <p className="text-xs text-cinema-popcorn/50 mt-0.5">Ajude nossa redação sugerindo resenhas críticas da cultura pop</p>
-              </div>
-            </div>
-
-            <form onSubmit={handleAddReview} className="space-y-4">
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-cinema-popcorn/60 mb-2">Título do Filme/Série</label>
-                <input
-                  type="text"
-                  required
-                  value={reviewTitle}
-                  onChange={(e) => setReviewTitle(e.target.value)}
-                  placeholder="Ex: Matrix Resurrections, Stranger Things..."
-                  className="w-full rounded-lg border border-cinema-charcoal bg-cinema-black/40 px-4 py-2.5 text-sm text-cinema-popcorn placeholder-cinema-gray outline-none focus:border-cinema-red"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-cinema-popcorn/60 mb-2">Tipo de Mídia</label>
-                  <select
-                    value={reviewType}
-                    onChange={(e) => setReviewType(e.target.value)}
-                    className="w-full rounded-lg border border-cinema-charcoal bg-cinema-black/40 px-4 py-2.5 text-sm text-cinema-popcorn outline-none focus:border-cinema-red"
-                  >
-                    <option value="filme">Filme</option>
-                    <option value="série">Série</option>
-                  </select>
-                </div>
-                <div className="flex items-end">
-                  <span className="text-[11px] text-cinema-popcorn/40 italic pb-2">
-                    A sugestão será avaliada pelos moderadores.
-                  </span>
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-cinema-popcorn/60 mb-2">Por que merece uma resenha? (Resumo)</label>
-                <textarea
-                  required
-                  rows="4"
-                  value={reviewContent}
-                  onChange={(e) => setReviewContent(e.target.value)}
-                  placeholder="Conte-nos os seus pontos de vista..."
-                  className="w-full rounded-lg border border-cinema-charcoal bg-cinema-black/40 px-4 py-2.5 text-sm text-cinema-popcorn placeholder-cinema-gray outline-none focus:border-cinema-red resize-none"
-                ></textarea>
-              </div>
-
-              {successMsg && (
-                <div className="flex items-center gap-2 rounded-lg bg-green-500/10 border border-green-500/30 p-3 text-xs text-green-400">
-                  <CheckCircle2 className="h-4 w-4 shrink-0" />
-                  <span>Obrigado! Sua sugestão foi adicionada ao painel da comunidade com sucesso.</span>
-                </div>
-              )}
-
-              <button
-                type="submit"
-                className="w-full rounded-lg bg-cinema-red py-3 text-sm font-bold text-cinema-popcorn shadow-[0_4px_12px_rgba(229,9,20,0.3)] hover:bg-red-700 hover:scale-[1.01] transition-all duration-200"
-              >
-                Enviar Sugestão de Resenha
-              </button>
-            </form>
-          </div>
-
-          <div className="lg:col-span-5 rounded-2xl border border-cinema-charcoal bg-cinema-charcoal/10 p-6 space-y-6">
-            <div className="flex items-center justify-between">
-              <h4 className="text-lg font-bold text-cinema-popcorn">Sugestões Recentes</h4>
-              <span className="rounded-full bg-cinema-charcoal px-2.5 py-0.5 text-xs text-cinema-gold font-bold">
-                {reviewsList.length} Ativas
-              </span>
-            </div>
-
-            <div className="space-y-4 max-h-[380px] overflow-y-auto pr-1">
-              {reviewsList.map((rev) => (
-                <div
-                  key={rev.id}
-                  className="rounded-xl border border-cinema-charcoal bg-cinema-charcoal/20 p-4 space-y-2.5 hover:border-cinema-gray transition-colors duration-200"
-                >
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-cinema-neon uppercase tracking-wider">{rev.type}</span>
-                    <span className="text-[10px] text-cinema-popcorn/40">Sugerido por: @{rev.author}</span>
-                  </div>
-                  <h5 className="font-bold text-cinema-popcorn">{rev.title}</h5>
-                  <p className="text-xs text-cinema-popcorn/60 leading-relaxed italic">
-                    "{rev.content}"
-                  </p>
-                  <div className="flex items-center gap-1.5 pt-1.5 border-t border-cinema-charcoal/40 text-[10px] text-cinema-gold">
-                    <Star className="h-3 w-3 fill-cinema-gold" />
-                    <span>Alta relevância da comunidade</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
         </section>
       </div>
     </Layout>
