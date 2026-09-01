@@ -8,8 +8,29 @@ function SearchBar({ value, onChange, category = 'movie', onCategoryChange }) {
 
   return (
     <div className="w-full max-w-xl mx-auto mb-8 space-y-4">
-      {/* Category selector tabs */}
-      {onCategoryChange && (
+      {/* Input Field */}
+      <div className="relative flex items-center">
+        <Search className="absolute left-4 h-5 w-5 text-cinema-gray pointer-events-none" />
+        <input
+          type="text"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder="Pesquise por filmes, séries, personagens..."
+          className="w-full rounded-full border border-cinema-charcoal bg-cinema-charcoal/20 pl-12 pr-10 py-3.5 text-sm text-cinema-popcorn placeholder-cinema-gray outline-none focus:border-cinema-gold focus:ring-1 focus:ring-cinema-gold/30 transition-all duration-300 shadow-md"
+        />
+        {value && (
+          <button
+            onClick={() => onChange('')}
+            className="absolute right-4 p-1 rounded-full text-cinema-gray hover:text-cinema-popcorn hover:bg-cinema-charcoal/40 transition-colors duration-200"
+            aria-label="Limpar busca"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        )}
+      </div>
+
+      {/* Category selector tabs - Oculto quando há busca ativa */}
+      {onCategoryChange && !value && (
         <div className="flex items-center justify-center gap-2 p-1.5 rounded-full bg-cinema-charcoal/30 border border-cinema-charcoal/60 backdrop-blur-sm max-w-xs mx-auto">
           {categories.map((cat) => {
             const Icon = cat.icon;
@@ -32,31 +53,6 @@ function SearchBar({ value, onChange, category = 'movie', onCategoryChange }) {
           })}
         </div>
       )}
-
-      {/* Input Field */}
-      <div className="relative flex items-center">
-        <Search className="absolute left-4 h-5 w-5 text-cinema-gray pointer-events-none" />
-        <input
-          type="text"
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          placeholder={
-            category === 'tv'
-              ? 'Pesquise por séries (ex: Stranger Things, Breaking Bad)...'
-              : 'Pesquise por filmes (ex: Duna, Matrix, Batman)...'
-          }
-          className="w-full rounded-full border border-cinema-charcoal bg-cinema-charcoal/20 pl-12 pr-10 py-3.5 text-sm text-cinema-popcorn placeholder-cinema-gray outline-none focus:border-cinema-gold focus:ring-1 focus:ring-cinema-gold/30 transition-all duration-300 shadow-md"
-        />
-        {value && (
-          <button
-            onClick={() => onChange('')}
-            className="absolute right-4 p-1 rounded-full text-cinema-gray hover:text-cinema-popcorn hover:bg-cinema-charcoal/40 transition-colors duration-200"
-            aria-label="Limpar busca"
-          >
-            <X className="h-4 w-4" />
-          </button>
-        )}
-      </div>
     </div>
   );
 }
