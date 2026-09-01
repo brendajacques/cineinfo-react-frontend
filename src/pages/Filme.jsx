@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext.jsx';
 import { useFavorites } from '../context/FavoritesContext.jsx';
 import Layout from '../components/Layout.jsx';
 import { Star, Heart, ArrowLeft, Clock, Calendar, Film, Sparkles } from 'lucide-react';
+import { fetchTmdb } from '../services/tmdb.js';
 
 
 function Filme() {
@@ -18,27 +19,7 @@ function Filme() {
     const fetchMovieDetails = async () => {
       try {
         setLoading(true);
-        const baseUrl = import.meta.env.VITE_TMDB_BASE_URL;
-        const token = import.meta.env.VITE_TMDB_ACCESS_TOKEN;
-
-        if (!baseUrl || !token) {
-          throw new Error('As variáveis de ambiente do TMDB não foram configuradas corretamente.');
-        }
-
-        const url = `${baseUrl}/movie/${id}?language=pt-BR&append_to_response=credits`;
-        const response = await fetch(url, {
-          method: 'GET',
-          headers: {
-            accept: 'application/json',
-            Authorization: `Bearer ${token}`
-          }
-        });
-
-        if (!response.ok) {
-          throw new Error(`Filme não encontrado (status: ${response.status})`);
-        }
-
-        const data = await response.json();
+        const data = await fetchTmdb(`/movie/${id}?language=pt-BR&append_to_response=credits`);
         setMovie(data);
       } catch (err) {
         console.error('Erro ao buscar detalhes do filme:', err);

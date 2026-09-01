@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext.jsx';
 import { applyMoviesListOverrides } from '../utils/movieStore.js';
+import { fetchTmdb } from '../services/tmdb.js';
 
 export default function Admin() {
   const navigate = useNavigate();
@@ -33,24 +34,8 @@ export default function Admin() {
     const fetchAdminMovies = async () => {
       try {
         setLoading(true);
-        const baseUrl = import.meta.env.VITE_TMDB_BASE_URL;
-        const token = import.meta.env.VITE_TMDB_ACCESS_TOKEN;
-
-        if (!baseUrl || !token) {
-          throw new Error('Variáveis de ambiente do TMDB não configuradas.');
-        }
-
-        const response = await fetch(`${baseUrl}/trending/movie/week?language=pt-BR`, {
-          headers: {
-            accept: 'application/json',
-            Authorization: `Bearer ${token}`
-          }
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          setMovies(applyMoviesListOverrides(data.results || []));
-        }
+        const data = await fetchTmdb('/trending/movie/week?language=pt-BR');
+        setMovies(applyMoviesListOverrides(data.results || []));
       } catch (err) {
         console.error('Erro ao carregar filmes no admin:', err);
       } finally {

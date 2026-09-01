@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext.jsx';
 import { getMovieOverride, saveMovieOverride } from '../utils/movieStore.js';
+import { fetchTmdb } from '../services/tmdb.js';
 
 export default function AdminEdit() {
   const { id } = useParams();
@@ -45,27 +46,8 @@ export default function AdminEdit() {
         // 1. Verifica se já existem alterações salvas no localStorage para este filme
         const localData = getMovieOverride(id);
 
-        // 2. Busca os dados atualizados da API do TMDB
-        const baseUrl = import.meta.env.VITE_TMDB_BASE_URL;
-        const token = import.meta.env.VITE_TMDB_ACCESS_TOKEN;
-
-        if (!baseUrl || !token) {
-          throw new Error('As variáveis de ambiente do TMDB não foram configuradas.');
-        }
-
-        const url = `${baseUrl}/movie/${id}?language=pt-BR`;
-        const response = await fetch(url, {
-          headers: {
-            accept: 'application/json',
-            Authorization: `Bearer ${token}`
-          }
-        });
-
-        if (!response.ok) {
-          throw new Error(`Filme não encontrado na API (status ${response.status})`);
-        }
-
-        const apiData = await response.json();
+        // 2. Busca os dados atualizados da API do TMDB através do proxy seguro
+        const apiData = await fetchTmdb(`/movie/${id}?language=pt-BR`);
 
         // 3. Preenche os estados iniciais (priorizando edições locais salvas, se existirem)
         setTitle(localData?.title || apiData.title || '');

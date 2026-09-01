@@ -4,6 +4,7 @@ import { useFavorites } from '../context/FavoritesContext.jsx';
 import Layout from '../components/Layout.jsx';
 import { Star, Heart, ArrowLeft, Clock, Calendar, Film, Sparkles, DollarSign, Globe, Clapperboard, MessageSquare, Tv } from 'lucide-react';
 import { applyMovieOverrides } from '../utils/movieStore.js';
+import { fetchTmdb } from '../services/tmdb.js';
 
 function MovieDetails() {
   const { id } = useParams();
@@ -19,42 +20,23 @@ function MovieDetails() {
       try {
         setLoading(true);
         setError(null);
-        const baseUrl = import.meta.env.VITE_TMDB_BASE_URL;
-        const token = import.meta.env.VITE_TMDB_ACCESS_TOKEN;
-
-        if (!baseUrl || !token) {
-          throw new Error('As variáveis de ambiente do TMDB não foram configuradas corretamente.');
-        }
-
-        const headers = {
-          accept: 'application/json',
-          Authorization: `Bearer ${token}`
-        };
 
         const isSeriePath = location.pathname.startsWith('/serie');
-        let primaryUrl = isSeriePath
-          ? `${baseUrl}/tv/${id}?language=pt-BR&append_to_response=credits,aggregate_credits`
-          : `${baseUrl}/movie/${id}?language=pt-BR&append_to_response=credits`;
+        const primaryEndpoint = isSeriePath
+          ? `/tv/${id}?language=pt-BR&append_to_response=credits,aggregate_credits`
+          : `/movie/${id}?language=pt-BR&append_to_response=credits`;
 
-        let response = await fetch(primaryUrl, { method: 'GET', headers });
+        let data;
+        try {
+          data = await fetchTmdb(primaryEndpoint);
+        } catch (err) {
+          // Se falhar no endpoint primário, tenta no endpoint alternativo (Filme <-> Série)
+          const fallbackEndpoint = isSeriePath
+            ? `/movie/${id}?language=pt-BR&append_to_response=credits`
+            : `/tv/${id}?language=pt-BR&append_to_response=credits,aggregate_credits`;
 
-        // Se falhar no endpoint primário, faz tentativa no endpoint alternativo (Filme <-> Série)
-        if (!response.ok) {
-          const fallbackUrl = isSeriePath
-            ? `${baseUrl}/movie/${id}?language=pt-BR&append_to_response=credits`
-            : `${baseUrl}/tv/${id}?language=pt-BR&append_to_response=credits,aggregate_credits`;
-
-          const fallbackResponse = await fetch(fallbackUrl, { method: 'GET', headers });
-          if (fallbackResponse.ok) {
-            response = fallbackResponse;
-          }
+          data = await fetchTmdb(fallbackEndpoint);
         }
-
-        if (!response.ok) {
-          throw new Error(`Título não encontrado (status: ${response.status})`);
-        }
-
-        const data = await response.json();
 
         // Normalização dos campos para unificar Filmes e Séries em uma única estrutura
         const isTv = !data.title && (!!data.name || !!data.first_air_date);

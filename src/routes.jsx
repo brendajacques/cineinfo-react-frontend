@@ -22,21 +22,21 @@ function AppRoutes() {
             <Route path="/filme/:id" element={<MovieDetails />} />
             <Route path="/serie/:id" element={<MovieDetails />} />
             <Route path="/favoritos" element={<Favorites />} />
-            <Route 
-              path="/admin" 
+            <Route
+              path="/admin"
               element={
                 <ProtectedRoute>
                   <Admin />
                 </ProtectedRoute>
-              } 
+              }
             />
-            <Route 
-              path="/admin/editar/:id" 
+            <Route
+              path="/admin/editar/:id"
               element={
                 <ProtectedRoute>
                   <AdminEdit />
                 </ProtectedRoute>
-              } 
+              }
             />
           </Routes>
         </FavoritesProvider>

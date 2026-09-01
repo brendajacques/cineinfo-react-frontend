@@ -7,6 +7,7 @@ import SearchBar from './components/SearchBar.jsx';
 import { useAuth } from './context/AuthContext.jsx';
 import { useFavorites } from './context/FavoritesContext.jsx';
 import { applyMovieOverrides, applyMoviesListOverrides } from './utils/movieStore.js';
+import { fetchTmdb } from './services/tmdb.js';
 
 function App() {
   const navigate = useNavigate();
@@ -50,27 +51,11 @@ function App() {
       try {
         setLoadingTmdb(true);
         setTmdbError(null);
-        const baseUrl = import.meta.env.VITE_TMDB_BASE_URL;
-        const token = import.meta.env.VITE_TMDB_ACCESS_TOKEN;
-
-        if (!baseUrl || !token) {
-          throw new Error('As variáveis de ambiente do TMDB não foram configuradas corretamente.');
-        }
 
         if (!featuredMovie) {
           try {
-            const featuredUrl = `${baseUrl}/movie/439079?language=pt-BR`;
-            const featuredResponse = await fetch(featuredUrl, {
-              method: 'GET',
-              headers: {
-                accept: 'application/json',
-                Authorization: `Bearer ${token}`
-              }
-            });
-            if (featuredResponse.ok) {
-              const featuredData = await featuredResponse.json();
-              setFeaturedMovie(applyMovieOverrides(featuredData));
-            }
+            const featuredData = await fetchTmdb('/movie/439079?language=pt-BR');
+            setFeaturedMovie(applyMovieOverrides(featuredData));
           } catch (err) {
             console.error('Erro ao buscar filme em destaque:', err);
           }
@@ -78,23 +63,11 @@ function App() {
 
         const query = searchTerm.trim();
         const category = searchCategory || 'movie';
-        const url = query
-          ? `${baseUrl}/search/${category}?query=${encodeURIComponent(query)}&language=pt-BR`
-          : `${baseUrl}/trending/${category}/week?language=pt-BR`;
+        const endpoint = query
+          ? `/search/${category}?query=${encodeURIComponent(query)}&language=pt-BR`
+          : `/trending/${category}/week?language=pt-BR`;
 
-        const response = await fetch(url, {
-          method: 'GET',
-          headers: {
-            accept: 'application/json',
-            Authorization: `Bearer ${token}`
-          }
-        });
-
-        if (!response.ok) {
-          throw new Error(`Erro na API TMDB: ${response.status} - ${response.statusText}`);
-        }
-
-        const data = await response.json();
+        const data = await fetchTmdb(endpoint);
         setTmdbMovies(applyMoviesListOverrides(data.results || []));
       } catch (err) {
         console.error('Erro ao buscar do TMDB:', err);

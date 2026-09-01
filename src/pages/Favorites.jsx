@@ -5,6 +5,7 @@ import Layout from '../components/Layout.jsx';
 import MovieCard from '../components/MovieCard.jsx';
 import { Heart, Film, ArrowLeft } from 'lucide-react';
 import { applyMovieOverrides } from '../utils/movieStore.js';
+import { fetchTmdb } from '../services/tmdb.js';
 
 function Favorites() {
   const navigate = useNavigate();
@@ -23,31 +24,16 @@ function Favorites() {
 
       try {
         setLoading(true);
-        const baseUrl = import.meta.env.VITE_TMDB_BASE_URL;
-        const token = import.meta.env.VITE_TMDB_ACCESS_TOKEN;
-
-        if (!baseUrl || !token) {
-          throw new Error('As variáveis de ambiente do TMDB não foram configuradas corretamente.');
-        }
 
         // Busca detalhes de todos os filmes favoritos em paralelo
         const moviePromises = favorites.map(async (id) => {
-          const url = `${baseUrl}/movie/${id}?language=pt-BR`;
-          const response = await fetch(url, {
-            method: 'GET',
-            headers: {
-              accept: 'application/json',
-              Authorization: `Bearer ${token}`
-            }
-          });
-
-          if (!response.ok) {
-            // Se um filme individual falhar (ex: deletado), retorna null para ignorá-lo silenciosamente
+          try {
+            const rawMovie = await fetchTmdb(`/movie/${id}?language=pt-BR`);
+            return applyMovieOverrides(rawMovie);
+          } catch (err) {
+            // Se um filme individual falhar (ex: id deletado ou indisponível), retorna null
             return null;
           }
-
-          const rawMovie = await response.json();
-          return applyMovieOverrides(rawMovie);
         });
 
         const results = await Promise.all(moviePromises);
