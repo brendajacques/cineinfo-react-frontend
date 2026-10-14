@@ -22,23 +22,31 @@ export default async function handler(req, res) {
   // Variáveis secretas do servidor (Vercel Environment Variables)
   const TMDB_BASE_URL = process.env.TMDB_BASE_URL || 'https://api.themoviedb.org/3';
   const TMDB_ACCESS_TOKEN = process.env.TMDB_ACCESS_TOKEN || process.env.VITE_TMDB_ACCESS_TOKEN;
+  const TMDB_API_KEY = process.env.TMDB_API_KEY || process.env.VITE_TMDB_API_KEY;
 
-  if (!TMDB_ACCESS_TOKEN) {
+  if (!TMDB_ACCESS_TOKEN && !TMDB_API_KEY) {
     return res.status(500).json({ 
-      error: 'Servidor mal configurado: TMDB_ACCESS_TOKEN não encontrado nas variáveis de ambiente da Vercel.' 
+      error: 'Servidor mal configurado: TMDB_ACCESS_TOKEN ou TMDB_API_KEY não encontrados nas variáveis de ambiente da Vercel.' 
     });
   }
 
   try {
     const cleanUrl = url.startsWith('/') ? url : `/${url}`;
-    const targetUrl = `${TMDB_BASE_URL}${cleanUrl}`;
+    const hasQuery = cleanUrl.includes('?');
+    
+    let targetUrl = `${TMDB_BASE_URL}${cleanUrl}`;
+    if (TMDB_API_KEY && !TMDB_ACCESS_TOKEN) {
+      targetUrl += `${hasQuery ? '&' : '?'}api_key=${TMDB_API_KEY}`;
+    }
+
+    const headers = { accept: 'application/json' };
+    if (TMDB_ACCESS_TOKEN) {
+      headers.Authorization = `Bearer ${TMDB_ACCESS_TOKEN}`;
+    }
 
     const response = await fetch(targetUrl, {
       method: 'GET',
-      headers: {
-        accept: 'application/json',
-        Authorization: `Bearer ${TMDB_ACCESS_TOKEN}`,
-      },
+      headers,
     });
 
     const data = await response.json();

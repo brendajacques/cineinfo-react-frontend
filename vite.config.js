@@ -21,24 +21,34 @@ function tmdbDevProxyPlugin(env) {
             }
 
             const token = env.TMDB_ACCESS_TOKEN || env.VITE_TMDB_ACCESS_TOKEN;
+            const apiKey = env.TMDB_API_KEY || env.VITE_TMDB_API_KEY;
             const baseUrl = env.TMDB_BASE_URL || 'https://api.themoviedb.org/3';
 
-            if (!token) {
+            if (!token && !apiKey) {
               res.statusCode = 500;
               res.setHeader('Content-Type', 'application/json');
-              res.end(JSON.stringify({ error: 'TMDB_ACCESS_TOKEN não encontrado no arquivo .env.' }));
+              res.end(JSON.stringify({ error: 'TMDB_ACCESS_TOKEN ou TMDB_API_KEY não encontrados no arquivo .env.' }));
               return;
             }
 
             const cleanUrl = targetPath.startsWith('/') ? targetPath : `/${targetPath}`;
-            const targetUrl = `${baseUrl}${cleanUrl}`;
+            
+            // Check if there is already a query string in the cleanUrl
+            const hasQuery = cleanUrl.includes('?');
+            
+            let targetUrl = `${baseUrl}${cleanUrl}`;
+            if (apiKey && !token) {
+              targetUrl += `${hasQuery ? '&' : '?'}api_key=${apiKey}`;
+            }
+
+            const headers = { accept: 'application/json' };
+            if (token) {
+              headers.Authorization = `Bearer ${token}`;
+            }
 
             const apiRes = await fetch(targetUrl, {
               method: 'GET',
-              headers: {
-                accept: 'application/json',
-                Authorization: `Bearer ${token}`
-              }
+              headers
             });
 
             const data = await apiRes.json();

@@ -98,7 +98,7 @@ function SugerirResenha() {
 
               <button
                 type="submit"
-                className="w-full rounded-lg bg-cinema-red py-3 text-sm font-bold text-cinema-popcorn shadow-[0_4px_12px_rgba(229,9,20,0.3)] hover:bg-red-700 hover:scale-[1.01] transition-all duration-200"
+                className="w-full rounded-lg bg-cinema-red py-3 text-sm font-bold text-cinema-popcorn shadow-[0_4px_12px_rgba(229,9,20,0.3)] hover:bg-red-700 transition-all duration-200"
               >
                 Enviar Sugestão de Resenha
               </button>

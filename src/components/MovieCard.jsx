@@ -62,7 +62,7 @@ function MovieCard({ movie, isFavorite, onFavoriteToggle, onDetailsClick }) {
   return (
     <Link
       to={targetRoute}
-      className="group relative flex flex-col overflow-hidden rounded-2xl border border-cinema-charcoal bg-cinema-charcoal/30 hover:bg-cinema-charcoal/50 hover:border-cinema-gray/80 transition-all duration-300 hover:shadow-[0_8px_30px_rgba(0,0,0,0.7)] hover:-translate-y-1 cursor-pointer"
+      className="group relative flex flex-col overflow-hidden rounded-2xl border border-cinema-charcoal bg-cinema-charcoal/30 hover:bg-cinema-charcoal/50 hover:border-cinema-gray/80 transition-all duration-300 hover:shadow-[0_8px_30px_rgba(0,0,0,0.7)] cursor-pointer"
     >
       {/* Imagem do Pôster e Overlays */}
       <div className="relative aspect-2/3 w-full overflow-hidden bg-cinema-black">
@@ -71,7 +71,7 @@ function MovieCard({ movie, isFavorite, onFavoriteToggle, onDetailsClick }) {
             src={imageUrl}
             alt={displayTitle}
             loading="lazy"
-            className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105 group-hover:opacity-90"
+            className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:opacity-90"
           />
         ) : (
           <div className="flex h-full w-full flex-col items-center justify-center bg-linear-to-b from-cinema-charcoal to-cinema-black p-4 text-center">
@@ -97,12 +97,12 @@ function MovieCard({ movie, isFavorite, onFavoriteToggle, onDetailsClick }) {
           onClick={handleFavoriteClick}
           className={`absolute right-3 top-3 z-10 flex h-9 w-9 items-center justify-center rounded-full border transition-all duration-300 shadow-[0_2px_8px_rgba(0,0,0,0.5)] ${
             isFavorite
-              ? 'border-cinema-gold bg-cinema-gold/25 text-cinema-gold shadow-[0_0_12px_rgba(245,197,24,0.5)] scale-110'
-              : 'border-cinema-charcoal bg-cinema-black/85 text-cinema-popcorn hover:border-cinema-gold hover:text-cinema-gold hover:scale-110'
+              ? 'border-cinema-gold bg-cinema-gold/25 text-cinema-gold shadow-[0_0_12px_rgba(245,197,24,0.5)]'
+              : 'border-cinema-charcoal bg-cinema-black/85 text-cinema-popcorn hover:border-cinema-gold hover:text-cinema-gold'
           }`}
           aria-label={isFavorite ? "Remover dos favoritos" : "Adicionar aos favoritos"}
         >
-          <Star className={`h-4.5 w-4.5 transition-transform duration-300 active:scale-75 ${isFavorite ? 'fill-cinema-gold text-cinema-gold' : ''}`} />
+          <Star className={`h-4.5 w-4.5 transition-transform duration-300 ${isFavorite ? 'fill-cinema-gold text-cinema-gold' : ''}`} />
         </button>
 
         {/* Efeito Hover: Botão Flutuante Central */}

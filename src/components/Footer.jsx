@@ -70,7 +70,7 @@ function Footer() {
             <ul className="space-y-2.5 text-sm">
               <li>
                 <Link to="/" className="flex items-center gap-1 hover:text-cinema-gold transition-colors duration-200">
-                  <ChevronRight className="h-3 w-3 text-cinema-red" /> Filmes
+                  <ChevronRight className="h-3 w-3 text-cinema-red" /> Filmes e Séries
                 </Link>
               </li>
               <li>

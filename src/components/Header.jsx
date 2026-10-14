@@ -25,7 +25,7 @@ function Header() {
   };
 
   const navLinks = [
-    { to: '/filmes', label: 'Filmes', icon: Film },
+    { to: '/filmes', label: 'Filmes e Séries', icon: Film },
     { to: '/favoritos', label: 'Favoritos', icon: Heart },
     { to: '/sugerir-resenha', label: 'Sugerir Resenha', icon: MessageSquare },
   ];

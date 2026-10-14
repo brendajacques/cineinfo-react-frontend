@@ -149,7 +149,7 @@ function MovieDetails() {
                   <img
                     src={posterUrl}
                     alt={movie.title}
-                    className="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-105"
+                    className="w-full h-auto object-cover transition-transform duration-500"
                   />
                 ) : (
                   <div className="flex aspect-2/3 w-full flex-col items-center justify-center bg-cinema-charcoal p-4 text-center">
@@ -231,7 +231,7 @@ function MovieDetails() {
               <div className="flex flex-wrap items-center gap-4 pt-2">
                 <button
                   onClick={() => toggleFavorite(movie.id)}
-                  className={`flex items-center gap-2 rounded-full border px-6 py-3 text-sm font-bold cursor-pointer transition-all duration-300 transform active:scale-95 ${isFav
+                  className={`flex items-center gap-2 rounded-full border px-6 py-3 text-sm font-bold cursor-pointer transition-all duration-300 ${isFav
                       ? 'border-cinema-gold bg-cinema-gold/15 text-cinema-gold shadow-[0_0_15px_rgba(245,197,24,0.35)] hover:bg-cinema-gold/25'
                       : 'border-cinema-gray bg-cinema-charcoal/40 text-cinema-popcorn hover:border-cinema-gold hover:text-cinema-gold hover:bg-cinema-charcoal/70'
                     }`}
@@ -288,7 +288,7 @@ function MovieDetails() {
                           <img
                             src={`https://image.tmdb.org/t/p/w185${actor.profile_path}`}
                             alt={actor.name}
-                            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                            className="h-full w-full object-cover transition-transform duration-500"
                           />
                         ) : (
                           <div className="h-full w-full bg-cinema-charcoal flex items-center justify-center text-cinema-gold text-lg font-bold">
